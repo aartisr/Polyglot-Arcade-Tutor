@@ -46,16 +46,16 @@ const IndexComponent: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 flex flex-col overflow-y-auto bg-slate-950 text-slate-100 p-6 md:p-12">
+    <div className="flex-1 flex flex-col overflow-y-auto bg-slate-950 text-slate-100 p-4 sm:p-6 md:p-12">
       {/* Hero Header */}
-      <div className="max-w-5xl mx-auto w-full space-y-10">
+      <div className="max-w-5xl mx-auto w-full space-y-8 sm:space-y-10">
         <div className="space-y-4">
           <div className="flex items-center gap-3">
-            <div className="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 shadow-lg shadow-cyan-950/50">
-              <Gamepad2 className="w-8 h-8" />
+            <div className="p-2.5 sm:p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 shadow-lg shadow-cyan-950/50 shrink-0">
+              <Gamepad2 className="w-6 h-6 sm:w-8 sm:h-8" />
             </div>
             <div>
-              <h1 className="text-2xl md:text-3xl font-extrabold text-slate-100 tracking-tight">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-100 tracking-tight">
                 PolyGlot Arcade Tutor
               </h1>
               <p className="text-xs md:text-sm text-cyan-400 font-mono mt-0.5">
@@ -64,17 +64,17 @@ const IndexComponent: React.FC = () => {
             </div>
           </div>
 
-          <p className="text-sm text-slate-400 leading-relaxed max-w-3xl">
+          <p className="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-3xl">
             Learn professional 2D arcade physics, bounding box collision math, projectile pool management, and 60 FPS animation loops from scratch! Switch effortlessly between <span className="text-yellow-400 font-semibold">JavaScript</span>, <span className="text-sky-400 font-semibold">Python</span>, and <span className="text-orange-400 font-semibold">Java</span> with live browser execution.
           </p>
 
           {/* Quick Action Buttons */}
-          <div className="flex flex-wrap items-center gap-3 pt-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
             <button
               onClick={() => handleLaunchGame(selectedGameId)}
-              className="flex items-center gap-2 px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-sm rounded-xl shadow-lg shadow-cyan-500/20 transition-all transform hover:-translate-y-0.5 cursor-pointer"
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-sm rounded-xl shadow-lg shadow-cyan-500/20 transition-all transform hover:-translate-y-0.5 cursor-pointer w-full sm:w-auto"
             >
-              <span>Launch {currentGame.title} (Step 1)</span>
+              <span>Launch {currentGame.title.split(':')[0]} (Step 1)</span>
               <ArrowRight className="w-4 h-4" />
             </button>
 
@@ -83,7 +83,7 @@ const IndexComponent: React.FC = () => {
                 arcadeAudio.playClick();
                 setShowShare(true);
               }}
-              className="flex items-center gap-2 px-5 py-3 bg-slate-900 hover:bg-slate-800 text-sky-300 hover:text-sky-200 font-bold text-sm rounded-xl border border-sky-500/40 shadow-neon-cyan transition-all cursor-pointer"
+              className="flex items-center justify-center gap-2 px-5 py-3 bg-slate-900 hover:bg-slate-800 text-sky-300 hover:text-sky-200 font-bold text-sm rounded-xl border border-sky-500/40 shadow-neon-cyan transition-all cursor-pointer w-full sm:w-auto"
             >
               <Share2 className="w-4 h-4 text-sky-400" />
               <span>Share Progress Card</span>

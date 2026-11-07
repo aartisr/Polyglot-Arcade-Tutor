@@ -104,7 +104,7 @@ export const CommunityActivityPanel: React.FC<CommunityActivityPanelProps> = ({ 
   };
 
   return (
-    <div className="w-80 h-full bg-slate-950 border-l border-slate-800 flex flex-col shrink-0 select-none z-20 shadow-2xl">
+    <div className="fixed inset-y-0 right-0 w-full sm:w-80 sm:relative h-full bg-slate-950 border-l border-slate-800 flex flex-col shrink-0 select-none z-50 sm:z-20 shadow-2xl animate-in slide-in-from-right duration-200">
       {/* Header */}
       <div className="p-3.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
         <div className="flex items-center gap-2">
