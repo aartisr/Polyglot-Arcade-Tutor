@@ -57,6 +57,18 @@ service cloud.firestore {
         && data.updatedAt == request.time;
     }
 
+    function isValidCodeDuel(data) {
+      return data.keys().hasAll(['creatorName', 'lessonId', 'status', 'createdAt'])
+        && data.keys().hasOnly(['creatorName', 'challengerName', 'lessonId', 'status', 'winner', 'createdAt'])
+        && data.creatorName is string
+        && data.creatorName.size() >= 1
+        && data.creatorName.size() <= 30
+        && data.lessonId is string
+        && data.lessonId.size() <= 50
+        && data.status in ['waiting', 'active', 'completed']
+        && data.createdAt == request.time;
+    }
+
     // Global High Scores collection
     match /high_scores/{scoreId} {
       allow read, list: if true;
@@ -75,6 +87,13 @@ service cloud.firestore {
     match /user_profiles/{profileId} {
       allow read, list: if true;
       allow create, update: if isValidId(profileId) && isValidUserProfile(request.resource.data);
+      allow delete: if false;
+    }
+
+    // 1v1 Code Duels collection
+    match /code_duels/{duelId} {
+      allow read, list: if true;
+      allow create, update: if isValidId(duelId) && isValidCodeDuel(request.resource.data);
       allow delete: if false;
     }
   }

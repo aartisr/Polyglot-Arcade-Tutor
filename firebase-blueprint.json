@@ -94,6 +94,20 @@
         }
       },
       "required": ["handle", "codingSeconds", "languagesMastered", "earnedBadges", "xp", "updatedAt"]
+    },
+    "CodeDuel": {
+      "title": "1v1 Code Duel Lobby",
+      "description": "Multiplayer 1v1 code duel room for head-to-head racing",
+      "type": "object",
+      "properties": {
+        "creatorName": { "type": "string", "maxLength": 30 },
+        "challengerName": { "type": "string", "maxLength": 30 },
+        "lessonId": { "type": "string", "maxLength": 50 },
+        "status": { "type": "string", "enum": ["waiting", "active", "completed"] },
+        "winner": { "type": "string", "maxLength": 30 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["creatorName", "lessonId", "status", "createdAt"]
     }
   },
   "firestore": {
@@ -108,6 +122,10 @@
     "/user_profiles/{profileId}": {
       "schema": "UserProfile",
       "description": "User profile statistics collection"
+    },
+    "/code_duels/{duelId}": {
+      "schema": "CodeDuel",
+      "description": "1v1 code duel lobbys collection"
     }
   }
 }

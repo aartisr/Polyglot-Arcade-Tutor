@@ -24,6 +24,7 @@ import {
   Zap,
   User,
   Share2,
+  Swords,
 } from 'lucide-react';
 import { GameSwitcher } from './GameSwitcher';
 import { GameManualModal } from './GameManualModal';
@@ -34,6 +35,7 @@ import { LevelUpModal } from '../gamification/LevelUpModal';
 import { XpToastFloating } from '../gamification/XpToastFloating';
 import { UserProfileModal } from '../profile/UserProfileModal';
 import { ShareProgressModal } from '../social/ShareProgressModal';
+import { CodeDuelLobbyModal } from '../social/CodeDuelLobbyModal';
 
 interface NavbarProps {
   currentStepId: string;
@@ -47,6 +49,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentStepId, onSelectStep }) =
   const [showQuests, setShowQuests] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [showShare, setShowShare] = useState(false);
+  const [showDuelLobby, setShowDuelLobby] = useState(false);
 
   const activeGameId = useWorkspaceStore((state) => state.activeGameId);
   const activeGame = getGameById(activeGameId);
@@ -171,6 +174,19 @@ export const Navbar: React.FC<NavbarProps> = ({ currentStepId, onSelectStep }) =
 
           {/* Desktop Full Action Toolbar (XL screens and above) */}
           <div className="hidden xl:flex items-center gap-2">
+            {/* 1v1 Code Duel Lobby Button */}
+            <button
+              onClick={() => {
+                arcadeAudio.playClick();
+                setShowDuelLobby(true);
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-cyan-950/70 hover:bg-cyan-900/80 border border-cyan-500/70 text-cyan-300 text-xs font-semibold rounded-lg transition-all shadow-neon-cyan cursor-pointer animate-pulse"
+              title="1v1 Code Duel Arena - Real-time matchmaking"
+            >
+              <Swords className="w-4 h-4 text-cyan-400" />
+              <span>1v1 Duel</span>
+            </button>
+
             {/* Share Progress Button */}
             <button
               onClick={() => {
@@ -415,6 +431,18 @@ export const Navbar: React.FC<NavbarProps> = ({ currentStepId, onSelectStep }) =
               <Share2 className="w-4 h-4 text-sky-400" />
               <span>Share Progress</span>
             </button>
+
+            <button
+              onClick={() => {
+                arcadeAudio.playClick();
+                setShowDuelLobby(true);
+                setShowMobileMenu(false);
+              }}
+              className="flex items-center gap-2 p-2.5 bg-cyan-950 border border-cyan-500/60 rounded-xl text-cyan-300 col-span-2"
+            >
+              <Swords className="w-4 h-4 text-cyan-400" />
+              <span>1v1 Code Duel Arena</span>
+            </button>
           </div>
 
           <div className="flex items-center justify-between pt-2 border-t border-slate-800/80 text-xs font-mono">
@@ -453,6 +481,13 @@ export const Navbar: React.FC<NavbarProps> = ({ currentStepId, onSelectStep }) =
         onOpenShare={() => setShowShare(true)}
       />
       <DailyQuestsModal isOpen={showQuests} onClose={() => setShowQuests(false)} />
+      <CodeDuelLobbyModal
+        isOpen={showDuelLobby}
+        onClose={() => setShowDuelLobby(false)}
+        onSelectDuelLesson={(lessonId, gameId) => {
+          onSelectStep(lessonId);
+        }}
+      />
     </>
   );
 };
