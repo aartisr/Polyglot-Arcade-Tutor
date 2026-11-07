@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Editor, { Monaco } from '@monaco-editor/react';
 import { useWorkspaceStore, updateCode } from '../../store/workspaceStore';
 import { LanguageSelector } from './LanguageSelector';
+import { BoilerplateSnippetsMenu } from './BoilerplateSnippetsMenu';
 import {
   registerMonacoSynthwaveThemes,
   SYNTHWAVE_NEON_THEME_ID,
@@ -55,11 +56,13 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ currentStepId }) => {
           <LanguageSelector currentStepId={currentStepId} />
         </div>
 
-        {/* Custom Synthwave Theme Selector Pill */}
-        <div className="pr-3 hidden sm:flex items-center gap-1.5 shrink-0">
+        {/* Snippets & Theme Selectors */}
+        <div className="pr-3 flex items-center gap-2 shrink-0">
+          <BoilerplateSnippetsMenu />
+
           <button
             onClick={toggleEditorTheme}
-            className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono font-bold rounded-lg border transition-all ${
+            className={`hidden md:flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono font-bold rounded-lg border transition-all cursor-pointer ${
               selectedTheme === SYNTHWAVE_NEON_THEME_ID
                 ? 'bg-pink-950/60 text-pink-300 border-pink-700/60 shadow-neon-magenta'
                 : 'bg-emerald-950/60 text-emerald-300 border-emerald-700/60'
@@ -67,7 +70,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ currentStepId }) => {
             title="Toggle Custom Monaco Synthwave/Matrix Theme"
           >
             <Palette className="w-3.5 h-3.5" />
-            <span>{selectedTheme === SYNTHWAVE_NEON_THEME_ID ? 'NEON CYBER' : 'MATRIX GREEN'}</span>
+            <span>{selectedTheme === SYNTHWAVE_NEON_THEME_ID ? 'NEON' : 'MATRIX'}</span>
           </button>
         </div>
       </div>
