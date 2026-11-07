@@ -140,6 +140,16 @@ export const Navbar: React.FC<NavbarProps> = ({ currentStepId, onSelectStep }) =
           {/* Generic Game Switcher Dropdown */}
           <GameSwitcher />
 
+          {/* Hack Club Haven Sponsor Logo Badge */}
+          <div className="hidden lg:flex items-center gap-1.5 px-3 py-1 bg-lime-950/70 border border-lime-500/70 rounded-lg shadow-[0_0_15px_rgba(132,204,22,0.3)] shrink-0">
+            <img
+              src="/assets/aistudio/image_59a3d311.png"
+              alt="Hack Club Haven"
+              className="w-7 h-7 object-contain rounded-md animate-pulse"
+            />
+            <span className="text-xs font-mono font-bold text-lime-300 tracking-wider">Hack Club Haven</span>
+          </div>
+
           {/* Rank Level Pill (Desktop) */}
           <button
             onClick={() => {

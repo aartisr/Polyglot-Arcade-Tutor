@@ -26,11 +26,18 @@ export const GameManualModal: React.FC<GameManualModalProps> = ({ isOpen, onClos
         {/* Modal Header */}
         <div className="flex items-center justify-between px-6 py-4 bg-slate-950 border-b border-slate-800">
           <div className="flex items-center gap-3">
-            <div className={`p-2.5 rounded-lg ${selectedGame.badgeBg} border ${selectedGame.badgeBorder} ${selectedGame.color}`}>
-              <span className="text-xl leading-none">{selectedGame.badge}</span>
+            <div className="p-1 bg-lime-950/70 border border-lime-500/70 rounded-xl shadow-[0_0_15px_rgba(132,204,22,0.4)] shrink-0">
+              <img
+                src="/assets/aistudio/image_59a3d311.png"
+                alt="Hack Club Haven"
+                className="w-10 h-10 object-contain rounded-lg animate-pulse"
+              />
             </div>
             <div>
-              <h2 className="text-base font-bold text-slate-100">{selectedGame.title}</h2>
+              <h2 className="text-base font-bold text-slate-100 flex items-center gap-2">
+                <span>{selectedGame.title}</span>
+                <span className="text-[10px] font-mono px-2 py-0.5 bg-lime-950 text-lime-300 border border-lime-700/60 rounded">Hack Club Haven</span>
+              </h2>
               <p className="text-xs text-cyan-400 font-mono">Official Arcade Guide & Architecture Manual</p>
             </div>
           </div>
