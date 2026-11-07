@@ -129,45 +129,47 @@ export const CommunityActivityPanel: React.FC<CommunityActivityPanelProps> = ({ 
       </div>
 
       {/* Activity List */}
-      <div className="flex-1 p-3 overflow-y-auto space-y-2.5">
-        {loading ? (
-          <div className="py-12 text-center text-slate-500 font-mono text-xs italic">
-            Connecting to Firestore live stream...
-          </div>
-        ) : activities.length === 0 ? (
-          <div className="py-12 text-center text-slate-500 font-mono text-xs italic">
-            No recent activity recorded yet. Run canvas or submit a score to broadcast!
-          </div>
-        ) : (
-          activities.map((act) => (
-            <div
-              key={act.id}
-              className={`p-3 rounded-lg border text-xs transition-all ${
-                act.type === 'score'
-                  ? 'bg-slate-900/90 border-amber-500/30 hover:border-amber-500/60'
-                  : 'bg-slate-900/90 border-pink-500/30 hover:border-pink-500/60'
-              }`}
-            >
-              <div className="flex items-start justify-between gap-2 mb-1">
-                <div className="flex items-center gap-1.5 font-bold text-slate-200">
-                  {act.type === 'score' ? (
-                    <Trophy className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                  ) : (
-                    <Award className="w-3.5 h-3.5 text-pink-400 shrink-0" />
-                  )}
-                  <span className="truncate text-slate-100">{act.title}</span>
-                </div>
-                <span className="text-[9.5px] font-mono text-slate-500 shrink-0">
-                  {formatTimeAgo(act.timestamp)}
-                </span>
-              </div>
-
-              <p className="text-[11px] text-slate-400 leading-normal pl-5">
-                {act.description}
-              </p>
+      <div className="flex-1 p-3 overflow-y-auto space-y-2.5 [mask-image:linear-gradient(to_bottom,transparent,black_10%,black_90%,transparent)]">
+        <div className="animate-marquee-slow flex flex-col gap-2.5">
+          {loading ? (
+            <div className="py-12 text-center text-slate-500 font-mono text-xs italic">
+              Connecting to Firestore live stream...
             </div>
-          ))
-        )}
+          ) : activities.length === 0 ? (
+            <div className="py-12 text-center text-slate-500 font-mono text-xs italic">
+              No recent activity recorded yet. Run canvas or submit a score to broadcast!
+            </div>
+          ) : (
+            activities.map((act) => (
+              <div
+                key={act.id}
+                className={`p-3 rounded-lg border text-xs transition-all ${
+                  act.type === 'score'
+                    ? 'bg-slate-900/90 border-amber-500/30 hover:border-amber-500/60'
+                    : 'bg-slate-900/90 border-pink-500/30 hover:border-pink-500/60'
+                }`}
+              >
+                <div className="flex items-start justify-between gap-2 mb-1">
+                  <div className="flex items-center gap-1.5 font-bold text-slate-200">
+                    {act.type === 'score' ? (
+                      <Trophy className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                    ) : (
+                      <Award className="w-3.5 h-3.5 text-pink-400 shrink-0" />
+                    )}
+                    <span className="truncate text-slate-100">{act.title}</span>
+                  </div>
+                  <span className="text-[9.5px] font-mono text-slate-500 shrink-0">
+                    {formatTimeAgo(act.timestamp)}
+                  </span>
+                </div>
+
+                <p className="text-[11px] text-slate-400 leading-normal pl-5">
+                  {act.description}
+                </p>
+              </div>
+            ))
+          )}
+        </div>
       </div>
 
       {/* Footer Info */}
