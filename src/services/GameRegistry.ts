@@ -351,6 +351,44 @@ export class GameRegistryService<T extends GameDefinition = GameDefinition> impl
   }
 
   /**
+   * Generic testing utility to run unit test assertions for game physics and logic on a given lesson.
+   */
+  public runLessonTests(
+    gameId: string,
+    lessonId: string,
+    code: string,
+    logs: string[]
+  ): { testId: string; name: string; description: string; hint: string; passed: boolean; message: string }[] {
+    const lesson = this.getLesson(gameId, lessonId);
+    if (!lesson || !lesson.tests) {
+      return [];
+    }
+
+    return lesson.tests.map((test) => {
+      try {
+        const result = test.check(code, logs);
+        return {
+          testId: test.id,
+          name: test.name,
+          description: test.description,
+          hint: test.hint,
+          passed: result.passed,
+          message: result.message,
+        };
+      } catch (err) {
+        return {
+          testId: test.id,
+          name: test.name,
+          description: test.description,
+          hint: test.hint,
+          passed: false,
+          message: err instanceof Error ? err.message : String(err),
+        };
+      }
+    });
+  }
+
+  /**
    * Subscribes to registry changes.
    */
   public subscribe(listener: GameRegistryListener<T>): () => void {

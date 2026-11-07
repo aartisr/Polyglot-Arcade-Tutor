@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import Editor, { Monaco } from '@monaco-editor/react';
 import { useWorkspaceStore, updateCode } from '../../store/workspaceStore';
+import { gameRegistry } from '../../services/GameRegistry';
 import { LanguageSelector } from './LanguageSelector';
 import { BoilerplateSnippetsMenu } from './BoilerplateSnippetsMenu';
+import { TestResultsModal, TestResultItem } from './TestResultsModal';
 import {
   registerMonacoSynthwaveThemes,
   SYNTHWAVE_NEON_THEME_ID,
   MATRIX_GREEN_THEME_ID,
 } from '../../utils/monacoThemes';
-import { Palette } from 'lucide-react';
+import { Palette, Beaker } from 'lucide-react';
+import { arcadeAudio } from '../../utils/audio';
 
 interface CodeEditorProps {
   currentStepId: string;
@@ -16,11 +19,16 @@ interface CodeEditorProps {
 
 export const CodeEditor: React.FC<CodeEditorProps> = ({ currentStepId }) => {
   const [selectedTheme, setSelectedTheme] = useState<string>(SYNTHWAVE_NEON_THEME_ID);
+  const [showTestModal, setShowTestModal] = useState<boolean>(false);
+  const [testResults, setTestResults] = useState<TestResultItem[]>([]);
 
+  const activeGameId = useWorkspaceStore((state) => state.activeGameId);
   const activeLanguage = useWorkspaceStore((state) => state.activeLanguage);
   const codeMap = useWorkspaceStore((state) => state.codeMap);
+  const logs = useWorkspaceStore((state) => state.logs);
 
   const currentCode = codeMap[activeLanguage] || '';
+  const currentLesson = gameRegistry.getLesson(activeGameId, currentStepId);
 
   const handleEditorChange = (value: string | undefined) => {
     updateCode(activeLanguage, value || '');
@@ -49,6 +57,19 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ currentStepId }) => {
     );
   };
 
+  const handleRunTests = () => {
+    arcadeAudio.playClick();
+    const results = gameRegistry.runLessonTests(activeGameId, currentStepId, currentCode, logs);
+    setTestResults(results);
+    setShowTestModal(true);
+
+    if (results.length > 0 && results.every((r) => r.passed)) {
+      arcadeAudio.playVictoryFanfare();
+    } else {
+      arcadeAudio.playCollision();
+    }
+  };
+
   return (
     <div className="flex flex-col h-full bg-slate-950 border-r border-slate-800 overflow-hidden">
       <div className="relative flex items-center justify-between bg-slate-900 border-b border-slate-800">
@@ -56,9 +77,19 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ currentStepId }) => {
           <LanguageSelector currentStepId={currentStepId} />
         </div>
 
-        {/* Snippets & Theme Selectors */}
+        {/* Snippets, Test Suite & Theme Selectors */}
         <div className="pr-3 flex items-center gap-2 shrink-0">
           <BoilerplateSnippetsMenu />
+
+          {/* Run Tests Button */}
+          <button
+            onClick={handleRunTests}
+            className="flex items-center gap-1.5 px-3 py-1 bg-cyan-950/70 hover:bg-cyan-900/90 border border-cyan-500/60 text-cyan-300 text-xs font-semibold rounded-lg transition-all shadow-neon-cyan cursor-pointer"
+            title="Run Unit Tests & Physics Assertions for this Lesson"
+          >
+            <Beaker className="w-3.5 h-3.5 text-cyan-400" />
+            <span className="hidden sm:inline">Run Tests</span>
+          </button>
 
           <button
             onClick={toggleEditorTheme}
@@ -106,6 +137,14 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ currentStepId }) => {
           }
         />
       </div>
+
+      {/* Physics & Logic Test Results Modal */}
+      <TestResultsModal
+        isOpen={showTestModal}
+        onClose={() => setShowTestModal(false)}
+        results={testResults}
+        lessonTitle={currentLesson.title}
+      />
     </div>
   );
 };
