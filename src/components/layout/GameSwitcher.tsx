@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useWorkspaceStore, setActiveGame } from '../../store/workspaceStore';
-import { getAllGames, getGameById } from '../../data/gamesRegistry';
+import { useGameRegistry } from '../../services';
 import { arcadeAudio } from '../../utils/audio';
 import { Gamepad2, ChevronDown, Check, Sparkles, Layers } from 'lucide-react';
 
@@ -13,9 +12,7 @@ export const GameSwitcher: React.FC<GameSwitcherProps> = ({ onSelectGame, classN
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
-  const activeGameId = useWorkspaceStore((state) => state.activeGameId);
-  const games = getAllGames();
-  const currentGame = getGameById(activeGameId);
+  const { games, activeGame, activeGameId, switchGame } = useGameRegistry();
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -29,7 +26,7 @@ export const GameSwitcher: React.FC<GameSwitcherProps> = ({ onSelectGame, classN
 
   const handleGameChange = (gameId: string) => {
     arcadeAudio.playClick();
-    setActiveGame(gameId);
+    switchGame(gameId);
     setIsOpen(false);
     if (onSelectGame) {
       onSelectGame(gameId);
@@ -46,7 +43,7 @@ export const GameSwitcher: React.FC<GameSwitcherProps> = ({ onSelectGame, classN
         className="flex items-center gap-2 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-700/80 rounded-xl transition-all shadow-sm group text-left"
         title="Switch Active Game Engine"
       >
-        <span className="text-base shrink-0">{currentGame.badge}</span>
+        <span className="text-base shrink-0">{activeGame.badge}</span>
         <div className="flex flex-col min-w-0">
           <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 group-hover:text-cyan-400 transition-colors flex items-center gap-1">
             <span>ARCADE ENGINE</span>
@@ -55,7 +52,7 @@ export const GameSwitcher: React.FC<GameSwitcherProps> = ({ onSelectGame, classN
             </span>
           </span>
           <span className="text-xs font-bold text-slate-100 truncate max-w-[130px] sm:max-w-[170px]">
-            {currentGame.title.split(':')[0]}
+            {activeGame.title.split(':')[0]}
           </span>
         </div>
         <ChevronDown
