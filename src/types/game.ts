@@ -55,3 +55,8 @@ export interface GameDefinition {
   getDifficultyParams: (level: DifficultyLevel) => DifficultyParamDetail;
   engine: GameEngineStrategy;
 }
+
+/**
+ * Generic GameTemplate alias for registered game configurations
+ */
+export type GameTemplate = GameDefinition;
