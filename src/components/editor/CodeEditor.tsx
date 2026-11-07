@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Editor, { Monaco } from '@monaco-editor/react';
+import confetti from 'canvas-confetti';
 import { useWorkspaceStore, updateCode } from '../../store/workspaceStore';
 import { gameRegistry } from '../../services/GameRegistry';
 import { CoopService } from '../../services/CoopService';
@@ -103,8 +104,23 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ currentStepId }) => {
     setTestResults(results);
     setShowTestModal(true);
 
+    const passedCount = results.filter(r => r.passed).length;
+
     if (results.length > 0 && results.every((r) => r.passed)) {
       arcadeAudio.playVictoryFanfare();
+      confetti({
+        particleCount: 150,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#00f3ff', '#ff007f', '#f59e0b']
+      });
+    } else if (passedCount > 0) {
+      confetti({
+        particleCount: 40,
+        spread: 50,
+        origin: { y: 0.7 },
+        colors: ['#00f3ff', '#ff007f']
+      });
     } else {
       arcadeAudio.playCollision();
     }

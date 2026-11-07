@@ -50,6 +50,12 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({ lesson, onNavigateNe
         passedCount++;
         addXp(100, `Passed ${test.name}`);
         incrementCombo();
+        confetti({
+          particleCount: 30,
+          spread: 40,
+          origin: { y: 0.7 },
+          colors: ['#00f3ff', '#ff007f'],
+        });
       } else {
         appendLog(`[TEST FAILED] ${test.name}: ${result.message}`);
         allPassed = false;
