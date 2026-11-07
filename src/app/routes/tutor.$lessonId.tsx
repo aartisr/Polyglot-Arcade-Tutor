@@ -4,8 +4,14 @@ import { RootRoute } from './__root';
 import { useLesson } from '../../queries/useLessons';
 import { Navbar } from '../../components/layout/Navbar';
 import { WorkspaceLayout } from '../../components/layout/WorkspaceLayout';
-import { useWorkspaceStore, setCurrentStepId, updateCode, setIsRunning } from '../../store/workspaceStore';
-import { LESSONS } from '../../data/lessonsData';
+import {
+  useWorkspaceStore,
+  setCurrentStepId,
+  updateCode,
+  setIsRunning,
+  setActiveGame,
+} from '../../store/workspaceStore';
+import { getGameById, findGameByLessonId, DEFAULT_GAME_ID } from '../../data/gamesRegistry';
 import { Loader2, AlertCircle } from 'lucide-react';
 
 const TutorComponent: React.FC = () => {
@@ -13,7 +19,17 @@ const TutorComponent: React.FC = () => {
   const lessonId = routeParams.lessonId || 'step-1';
   const navigate = useNavigate();
 
-  const { data: lesson, isLoading, isError } = useLesson(lessonId);
+  const activeGameId = useWorkspaceStore((state) => state.activeGameId);
+
+  // If the URL lesson belongs to a different game than activeGameId, synchronize active game
+  useEffect(() => {
+    const ownerGame = findGameByLessonId(lessonId);
+    if (ownerGame && ownerGame.id !== activeGameId) {
+      setActiveGame(ownerGame.id);
+    }
+  }, [lessonId, activeGameId]);
+
+  const { data: lesson, isLoading, isError } = useLesson(lessonId, activeGameId);
 
   const activeLanguage = useWorkspaceStore((state) => state.activeLanguage);
   const codeMap = useWorkspaceStore((state) => state.codeMap);
@@ -39,17 +55,18 @@ const TutorComponent: React.FC = () => {
 
   const handleNavigateNext = () => {
     setIsRunning(false);
-    const currentIndex = LESSONS.findIndex((l) => l.id === lessonId);
-    if (currentIndex >= 0 && currentIndex < LESSONS.length - 1) {
-      const nextStep = LESSONS[currentIndex + 1];
+    const currentGame = getGameById(activeGameId);
+    const currentIndex = currentGame.lessons.findIndex((l) => l.id === lessonId);
+    if (currentIndex >= 0 && currentIndex < currentGame.lessons.length - 1) {
+      const nextStep = currentGame.lessons[currentIndex + 1];
       // Reset starter boilerplate for next step so user begins fresh
       (['javascript', 'python', 'java'] as const).forEach((lang) => {
         updateCode(lang, nextStep.codeBoilerplate[lang]);
       });
       navigate({ to: '/tutor/$lessonId', params: { lessonId: nextStep.id } });
     } else {
-      // Completed all steps - loop to step-1
-      navigate({ to: '/tutor/$lessonId', params: { lessonId: 'step-1' } });
+      // Completed all steps in this game - loop to first step
+      navigate({ to: '/tutor/$lessonId', params: { lessonId: currentGame.lessons[0].id } });
     }
   };
 

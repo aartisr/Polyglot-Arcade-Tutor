@@ -1,31 +1,30 @@
 import { useQuery } from '@tanstack/react-query';
-import { LESSONS } from '../data/lessonsData';
+import { getGameById, getLessonByGameAndId, DEFAULT_GAME_ID } from '../data/gamesRegistry';
 import { LessonStep } from '../types/lesson';
 
-// Asynchronous simulation to emulate API fetching with TanStack Query
-async function fetchLessons(): Promise<LessonStep[]> {
-  // Brief latency simulation for crisp UI query states
-  await new Promise((resolve) => setTimeout(resolve, 80));
-  return LESSONS;
+async function fetchLessons(gameId: string = DEFAULT_GAME_ID): Promise<LessonStep[]> {
+  await new Promise((resolve) => setTimeout(resolve, 60));
+  const game = getGameById(gameId);
+  return game.lessons;
 }
 
-async function fetchLessonById(id: string): Promise<LessonStep | undefined> {
-  await new Promise((resolve) => setTimeout(resolve, 50));
-  return LESSONS.find((lesson) => lesson.id === id);
+async function fetchLessonById(lessonId: string, gameId: string = DEFAULT_GAME_ID): Promise<LessonStep | undefined> {
+  await new Promise((resolve) => setTimeout(resolve, 40));
+  return getLessonByGameAndId(gameId, lessonId);
 }
 
-export function useLessons() {
+export function useLessons(gameId: string = DEFAULT_GAME_ID) {
   return useQuery({
-    queryKey: ['lessons'],
-    queryFn: fetchLessons,
+    queryKey: ['lessons', gameId],
+    queryFn: () => fetchLessons(gameId),
     staleTime: Infinity,
   });
 }
 
-export function useLesson(lessonId: string) {
+export function useLesson(lessonId: string, gameId: string = DEFAULT_GAME_ID) {
   return useQuery({
-    queryKey: ['lesson', lessonId],
-    queryFn: () => fetchLessonById(lessonId),
+    queryKey: ['lesson', gameId, lessonId],
+    queryFn: () => fetchLessonById(lessonId, gameId),
     staleTime: Infinity,
     enabled: Boolean(lessonId),
   });

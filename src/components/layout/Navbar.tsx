@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LESSONS } from '../../data/lessonsData';
+import { getGameById } from '../../data/gamesRegistry';
 import {
   useWorkspaceStore,
   toggleSound,
@@ -25,6 +25,7 @@ import {
   User,
   Share2,
 } from 'lucide-react';
+import { GameSwitcher } from './GameSwitcher';
 import { GameManualModal } from './GameManualModal';
 import { HighScoreModal } from '../highscores/HighScoreModal';
 import { AchievementsModal } from '../achievements/AchievementsModal';
@@ -47,8 +48,12 @@ export const Navbar: React.FC<NavbarProps> = ({ currentStepId, onSelectStep }) =
   const [showProfile, setShowProfile] = useState(false);
   const [showShare, setShowShare] = useState(false);
 
+  const activeGameId = useWorkspaceStore((state) => state.activeGameId);
+  const activeGame = getGameById(activeGameId);
   const activeLanguage = useWorkspaceStore((state) => state.activeLanguage);
-  const completedSteps = useWorkspaceStore((state) => state.completedSteps);
+  const completedSteps = useWorkspaceStore(
+    (state) => state.completedStepsByGame?.[state.activeGameId] || state.completedSteps
+  );
   const soundEnabled = useWorkspaceStore((state) => state.soundEnabled);
   const crtModeEnabled = useWorkspaceStore((state) => state.crtModeEnabled);
   const xp = useWorkspaceStore((state) => state.xp);
@@ -80,7 +85,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentStepId, onSelectStep }) =
   return (
     <>
       <header className="flex items-center justify-between gap-6 px-6 py-2.5 bg-slate-950 border-b border-slate-800 text-slate-100 shrink-0">
-        {/* Zone 1: Brand Wordmark & Developer Level Badge */}
+        {/* Zone 1: Brand Wordmark, Game Switcher & Developer Level Badge */}
         <div className="flex items-center gap-3 shrink-0">
           <div className="p-2 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 shadow-neon-cyan">
             <Gamepad2 className="w-5 h-5" />
@@ -89,12 +94,15 @@ export const Navbar: React.FC<NavbarProps> = ({ currentStepId, onSelectStep }) =
             href="/"
             onClick={(e) => {
               e.preventDefault();
-              handleStepClick('step-1');
+              handleStepClick(activeGame.lessons[0].id);
             }}
             className="text-base font-bold tracking-tight text-slate-100 hover:text-cyan-400 transition-colors whitespace-nowrap shrink-0 flex items-center gap-2"
           >
             <span>PolyGlot Arcade Tutor</span>
           </a>
+
+          {/* Generic Game Switcher Dropdown */}
+          <GameSwitcher />
 
           {/* Rank Level Pill */}
           <button
@@ -116,9 +124,9 @@ export const Navbar: React.FC<NavbarProps> = ({ currentStepId, onSelectStep }) =
           </button>
         </div>
 
-        {/* Zone 2: Step Navigation Links */}
+        {/* Zone 2: Step Navigation Links for Active Game */}
         <nav className="hidden lg:flex items-center gap-2">
-          {LESSONS.map((step) => {
+          {activeGame.lessons.map((step) => {
             const isActive = currentStepId === step.id;
             const isDone = Boolean(completedSteps[step.id]);
 

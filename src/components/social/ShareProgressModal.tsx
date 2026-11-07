@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useWorkspaceStore, getRankForXp } from '../../store/workspaceStore';
 import { BADGE_CATALOG, subscribeUnlockedAchievements, UnlockedAchievementRecord } from '../../lib/achievementService';
+import { getGameById } from '../../data/gamesRegistry';
 import { arcadeAudio } from '../../utils/audio';
 import {
   Share2,
@@ -29,8 +30,12 @@ export const ShareProgressModal: React.FC<ShareProgressModalProps> = ({ isOpen, 
   const [generatingImage, setGeneratingImage] = useState(false);
   const [unlockedBadgesMap, setUnlockedBadgesMap] = useState<Record<string, UnlockedAchievementRecord>>({});
 
+  const activeGameId = useWorkspaceStore((state) => state.activeGameId);
+  const activeGame = getGameById(activeGameId);
   const xp = useWorkspaceStore((state) => state.xp);
-  const completedSteps = useWorkspaceStore((state) => state.completedSteps);
+  const completedSteps = useWorkspaceStore(
+    (state) => state.completedStepsByGame?.[state.activeGameId] || state.completedSteps
+  );
   const activeLanguage = useWorkspaceStore((state) => state.activeLanguage);
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -50,7 +55,7 @@ export const ShareProgressModal: React.FC<ShareProgressModalProps> = ({ isOpen, 
   const completedCount = Object.keys(completedSteps).filter((k) => completedSteps[k]).length;
 
   const shareUrl = typeof window !== 'undefined' ? window.location.origin : 'https://polyglot-arcade.vercel.app';
-  const tutorialUrl = `${shareUrl}/tutor/step-1`;
+  const tutorialUrl = `${shareUrl}/tutor/${activeGame.lessons[0].id}`;
 
   const badgesListText = unlockedBadges.length > 0
     ? unlockedBadges.map((b) => `${b.icon} ${b.title}`).join(', ')
@@ -58,8 +63,8 @@ export const ShareProgressModal: React.FC<ShareProgressModalProps> = ({ isOpen, 
 
   const tweetContent = `🎮 Leveled up to Level ${currentRank.level}: ${currentRank.title} (${xp} XP) on PolyGlot Arcade Tutor!\n\n` +
     `🏆 Badges Unlocked: ${badgesListText}\n` +
-    `🕹️ Building "Neon Dungeon: Rogue Crawler" across JavaScript, Python & Java.\n\n` +
-    `Play & code the retro top-down game here:`;
+    `🕹️ Building "${activeGame.title}" across JavaScript, Python & Java.\n\n` +
+    `Play & code the retro 2D engine here:`;
 
   const twitterIntentUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
     tweetContent
@@ -148,11 +153,11 @@ export const ShareProgressModal: React.FC<ShareProgressModalProps> = ({ isOpen, 
 
     ctx.fillStyle = '#ffffff';
     ctx.font = '900 44px "Plus Jakarta Sans", sans-serif';
-    ctx.fillText('Neon Dungeon: Rogue Crawler', 60, 130);
+    ctx.fillText(activeGame.title, 60, 130);
 
     ctx.fillStyle = '#38bdf8';
     ctx.font = '500 20px "JetBrains Mono", monospace';
-    ctx.fillText('Triple-Language Retro 2D Game Architecture (JS · Python · Java)', 60, 165);
+    ctx.fillText(`${activeGame.genre} (JS · Python · Java)`, 60, 165);
 
     // 6. Player Stat Box
     ctx.fillStyle = '#0f172a';
@@ -293,8 +298,8 @@ export const ShareProgressModal: React.FC<ShareProgressModalProps> = ({ isOpen, 
                   PolyGlot Arcade Tutor
                 </span>
               </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-pink-950/80 text-pink-300 border border-pink-700/60 font-bold">
-                NEON DUNGEON: ROGUE CRAWLER
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-pink-950/80 text-pink-300 border border-pink-700/60 font-bold uppercase">
+                {activeGame.title}
               </span>
             </div>
 

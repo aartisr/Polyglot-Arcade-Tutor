@@ -39,12 +39,15 @@ export interface LevelUpNotification {
 }
 
 export interface WorkspaceState {
+  activeGameId: string;
   activeLanguage: Language;
   codeMap: Record<Language, string>;
+  codeMapByGame?: Record<string, Record<Language, string>>;
   isRunning: boolean;
   logs: string[];
   currentStepId: string;
   completedSteps: Record<string, boolean>;
+  completedStepsByGame?: Record<string, Record<string, boolean>>;
   validationResults: Record<string, { passed: boolean; message: string }>;
   soundEnabled: boolean;
   difficulty: DifficultyLevel;

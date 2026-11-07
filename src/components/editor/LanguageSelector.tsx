@@ -1,7 +1,7 @@
 import React from 'react';
 import { useWorkspaceStore, setLanguage, setDifficulty, updateCode, appendLog } from '../../store/workspaceStore';
 import { Language, DifficultyLevel } from '../../types/lesson';
-import { LESSONS } from '../../data/lessonsData';
+import { getLessonByGameAndId } from '../../data/gamesRegistry';
 import { RotateCcw, Eye, Gauge, Zap } from 'lucide-react';
 
 interface LanguageSelectorProps {
@@ -9,10 +9,11 @@ interface LanguageSelectorProps {
 }
 
 export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ currentStepId }) => {
+  const activeGameId = useWorkspaceStore((state) => state.activeGameId);
   const activeLanguage = useWorkspaceStore((state) => state.activeLanguage);
   const difficulty = useWorkspaceStore((state) => state.difficulty);
 
-  const currentStep = LESSONS.find((s) => s.id === currentStepId) || LESSONS[0];
+  const currentStep = getLessonByGameAndId(activeGameId, currentStepId);
 
   const languages: { id: Language; label: string; icon: string; color: string }[] = [
     { id: 'javascript', label: 'JavaScript', icon: 'JS', color: 'bg-yellow-400 text-slate-950 font-bold' },

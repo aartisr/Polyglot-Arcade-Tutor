@@ -37,12 +37,21 @@ const initialCodeMap: Record<Language, string> = {
 };
 
 export const workspaceStore = new Store<WorkspaceState>({
+  activeGameId: 'neon-dungeon',
   activeLanguage: 'javascript',
   codeMap: initialCodeMap,
+  codeMapByGame: {
+    'neon-dungeon': { ...initialCodeMap },
+    'cyber-invaders': { ...initialCodeMap },
+  },
   isRunning: false,
   logs: ['[SYSTEM] PolyGlot Arcade Engine ready. Select a lesson step and press Run Code.'],
   currentStepId: 'step-1',
   completedSteps: {},
+  completedStepsByGame: {
+    'neon-dungeon': {},
+    'cyber-invaders': {},
+  },
   validationResults: {},
   soundEnabled: true,
   difficulty: 3,
@@ -55,6 +64,26 @@ export const workspaceStore = new Store<WorkspaceState>({
 });
 
 // Helper actions
+export const setActiveGame = (gameId: string) => {
+  workspaceStore.setState((state) => {
+    if (state.activeGameId === gameId) return state;
+
+    const gameCodeMap = state.codeMapByGame?.[gameId] || initialCodeMap;
+    const gameCompleted = state.completedStepsByGame?.[gameId] || {};
+
+    return {
+      ...state,
+      activeGameId: gameId,
+      codeMap: { ...gameCodeMap },
+      completedSteps: { ...gameCompleted },
+      currentStepId: 'step-1',
+      isRunning: false,
+      validationResults: {},
+      logs: [...state.logs.slice(-80), `[SYSTEM] Switched active tutorial to game: ${gameId}`],
+    };
+  });
+};
+
 export const setLanguage = (lang: Language) => {
   workspaceStore.setState((state) => ({
     ...state,
@@ -77,13 +106,25 @@ export const toggleCrtMode = () => {
 };
 
 export const updateCode = (lang: Language, code: string) => {
-  workspaceStore.setState((state) => ({
-    ...state,
-    codeMap: {
-      ...state.codeMap,
-      [lang]: code,
-    },
-  }));
+  workspaceStore.setState((state) => {
+    const activeGame = state.activeGameId || 'neon-dungeon';
+    const existingGameCodes = state.codeMapByGame?.[activeGame] || { ...state.codeMap };
+
+    return {
+      ...state,
+      codeMap: {
+        ...state.codeMap,
+        [lang]: code,
+      },
+      codeMapByGame: {
+        ...(state.codeMapByGame || {}),
+        [activeGame]: {
+          ...existingGameCodes,
+          [lang]: code,
+        },
+      },
+    };
+  });
 };
 
 export const appendLog = (msg: string) => {
@@ -116,13 +157,25 @@ export const setCurrentStepId = (stepId: string) => {
 };
 
 export const setStepCompleted = (stepId: string, completed = true) => {
-  workspaceStore.setState((state) => ({
-    ...state,
-    completedSteps: {
-      ...state.completedSteps,
-      [stepId]: completed,
-    },
-  }));
+  workspaceStore.setState((state) => {
+    const activeGame = state.activeGameId || 'neon-dungeon';
+    const existingGameCompleted = state.completedStepsByGame?.[activeGame] || {};
+
+    return {
+      ...state,
+      completedSteps: {
+        ...state.completedSteps,
+        [stepId]: completed,
+      },
+      completedStepsByGame: {
+        ...(state.completedStepsByGame || {}),
+        [activeGame]: {
+          ...existingGameCompleted,
+          [stepId]: completed,
+        },
+      },
+    };
+  });
 };
 
 export const setValidationResult = (testId: string, passed: boolean, message: string) => {
