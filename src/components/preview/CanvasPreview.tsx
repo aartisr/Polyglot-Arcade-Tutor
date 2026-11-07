@@ -27,6 +27,14 @@ export const CanvasPreview: React.FC<CanvasPreviewProps> = ({ currentStepId }) =
     stepId: currentStepId,
   });
 
+  React.useEffect(() => {
+    const handleRunEvent = () => {
+      toggleRun();
+    };
+    window.addEventListener('arcade-run-code', handleRunEvent);
+    return () => window.removeEventListener('arcade-run-code', handleRunEvent);
+  }, [toggleRun]);
+
   return (
     <div className="flex flex-col h-full bg-slate-900 border-l border-slate-800 overflow-y-auto">
       {/* Canvas Header Controls */}

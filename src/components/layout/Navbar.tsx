@@ -7,6 +7,7 @@ import {
   setCurrentStepId,
   getRankForXp,
   RANKS,
+  clearLogs,
 } from '../../store/workspaceStore';
 import { arcadeAudio } from '../../utils/audio';
 import {
@@ -25,6 +26,7 @@ import {
   User,
   Share2,
   Swords,
+  Command,
 } from 'lucide-react';
 import { GameSwitcher } from './GameSwitcher';
 import { GameManualModal } from './GameManualModal';
@@ -36,6 +38,7 @@ import { XpToastFloating } from '../gamification/XpToastFloating';
 import { UserProfileModal } from '../profile/UserProfileModal';
 import { ShareProgressModal } from '../social/ShareProgressModal';
 import { CodeDuelLobbyModal } from '../social/CodeDuelLobbyModal';
+import { CommandPaletteModal } from '../editor/CommandPaletteModal';
 
 interface NavbarProps {
   currentStepId: string;
@@ -50,6 +53,32 @@ export const Navbar: React.FC<NavbarProps> = ({ currentStepId, onSelectStep }) =
   const [showProfile, setShowProfile] = useState(false);
   const [showShare, setShowShare] = useState(false);
   const [showDuelLobby, setShowDuelLobby] = useState(false);
+  const [showCommandPalette, setShowCommandPalette] = useState(false);
+
+  // Global Keyboard Shortcuts Listener (Ctrl+K, Ctrl+Enter, Ctrl+L)
+  React.useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      // Ctrl+K or Cmd+K: Open Command Palette
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setShowCommandPalette((prev) => !prev);
+      }
+      // Ctrl+Enter or Cmd+Enter: Run Code
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        window.dispatchEvent(new CustomEvent('arcade-run-code'));
+      }
+      // Ctrl+L or Cmd+L: Clear Console Logs
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'l') {
+        e.preventDefault();
+        clearLogs();
+        arcadeAudio.playClick();
+      }
+    };
+
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, []);
 
   const activeGameId = useWorkspaceStore((state) => state.activeGameId);
   const activeGame = getGameById(activeGameId);
@@ -174,6 +203,18 @@ export const Navbar: React.FC<NavbarProps> = ({ currentStepId, onSelectStep }) =
 
           {/* Desktop Full Action Toolbar (XL screens and above) */}
           <div className="hidden xl:flex items-center gap-2">
+            {/* Command Palette Button */}
+            <button
+              onClick={() => {
+                arcadeAudio.playClick();
+                setShowCommandPalette(true);
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 border border-cyan-500/40 text-cyan-300 text-xs font-semibold rounded-lg transition-all shadow-neon-cyan cursor-pointer"
+              title="Open Command Palette (Ctrl+K)"
+            >
+              <Command className="w-4 h-4 text-cyan-400" />
+              <span>Cmd+K</span>
+            </button>
             {/* 1v1 Code Duel Lobby Button */}
             <button
               onClick={() => {
@@ -486,6 +527,23 @@ export const Navbar: React.FC<NavbarProps> = ({ currentStepId, onSelectStep }) =
         onClose={() => setShowDuelLobby(false)}
         onSelectDuelLesson={(lessonId, gameId) => {
           onSelectStep(lessonId);
+        }}
+      />
+      <CommandPaletteModal
+        isOpen={showCommandPalette}
+        onClose={() => setShowCommandPalette(false)}
+        onToggleRun={() => {
+          window.dispatchEvent(new CustomEvent('arcade-run-code'));
+        }}
+        isRunning={false}
+        onOpenShare={() => setShowShare(true)}
+        onOpenProfile={() => setShowProfile(true)}
+        onOpenQuests={() => setShowQuests(true)}
+        onOpenHighScores={() => setShowHighScores(true)}
+        onOpenManual={() => setShowManual(true)}
+        onOpenDuelLobby={() => setShowDuelLobby(true)}
+        onToggleTheme={() => {
+          // Trigger theme toggle event or handle theme
         }}
       />
     </>
