@@ -51,11 +51,16 @@ const IndexComponent: React.FC = () => {
       <div className="max-w-5xl mx-auto w-full space-y-8 sm:space-y-10">
         <div className="space-y-4">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 sm:p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 shadow-lg shadow-cyan-950/50 shrink-0">
-              <Gamepad2 className="w-6 h-6 sm:w-8 sm:h-8" />
+            <div className="p-1 rounded-xl bg-lime-950/70 border border-lime-500/50 shadow-[0_0_15px_rgba(132,204,22,0.3)] shrink-0">
+              <img
+                src="/assets/aistudio/image_59a3d311.png"
+                alt="Hack Club Haven"
+                className="w-12 h-12 sm:w-16 sm:h-16 object-contain rounded-lg animate-pulse"
+              />
             </div>
             <div>
-              <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-100 tracking-tight">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-100 tracking-tight flex items-center gap-3">
+                <Gamepad2 className="w-6 h-6 text-cyan-400" />
                 PolyGlot Arcade Tutor
               </h1>
               <p className="text-xs md:text-sm text-cyan-400 font-mono mt-0.5">
