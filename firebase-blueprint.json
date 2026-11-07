@@ -1,0 +1,113 @@
+{
+  "entities": {
+    "HighScore": {
+      "title": "High Score Record",
+      "description": "Global leaderboard score record for Neon Dungeon Rogue Crawler",
+      "type": "object",
+      "properties": {
+        "playerName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 30,
+          "description": "Arcade handle or user nickname"
+        },
+        "score": {
+          "type": "number",
+          "description": "Numeric score achieved in game loop"
+        },
+        "language": {
+          "type": "string",
+          "enum": ["javascript", "python", "java"],
+          "description": "Programming language tab used"
+        },
+        "difficulty": {
+          "type": "number",
+          "description": "Game difficulty level (1 to 5)"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of score record"
+        }
+      },
+      "required": ["playerName", "score", "language", "difficulty", "createdAt"]
+    },
+    "Achievement": {
+      "title": "User Achievement Badge",
+      "description": "Unlockable medals stored in Firestore for lesson speed & code accuracy",
+      "type": "object",
+      "properties": {
+        "badgeId": {
+          "type": "string",
+          "description": "Unique identifier of badge"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 50,
+          "description": "Title of the unlocked achievement medal"
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 150,
+          "description": "Description of unlock requirement"
+        },
+        "category": {
+          "type": "string",
+          "enum": ["speed", "accuracy", "polyglot", "mastery"],
+          "description": "Achievement category tag"
+        },
+        "unlockedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when medal was unlocked"
+        }
+      },
+      "required": ["badgeId", "title", "description", "category", "unlockedAt"]
+    },
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Tracks total coding time, languages mastered, XP, and badges",
+      "type": "object",
+      "properties": {
+        "handle": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 30
+        },
+        "codingSeconds": {
+          "type": "number"
+        },
+        "languagesMastered": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "earnedBadges": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "xp": {
+          "type": "number"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["handle", "codingSeconds", "languagesMastered", "earnedBadges", "xp", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/high_scores/{scoreId}": {
+      "schema": "HighScore",
+      "description": "Global high scores collection"
+    },
+    "/user_achievements/{achievementId}": {
+      "schema": "Achievement",
+      "description": "Unlocked achievements collection"
+    },
+    "/user_profiles/{profileId}": {
+      "schema": "UserProfile",
+      "description": "User profile statistics collection"
+    }
+  }
+}

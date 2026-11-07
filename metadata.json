@@ -1,0 +1,6 @@
+{
+  "name": "PolyGlot Arcade Tutor",
+  "description": "Interactive Web IDE and Tutor for building retro 2D top-down games in JavaScript, Python, and Java.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

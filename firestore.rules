@@ -1,0 +1,81 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny catch-all safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidHighScore(data) {
+      return data.keys().hasAll(['playerName', 'score', 'language', 'difficulty', 'createdAt'])
+        && data.keys().hasOnly(['playerName', 'score', 'language', 'difficulty', 'createdAt'])
+        && data.playerName is string
+        && data.playerName.size() >= 1
+        && data.playerName.size() <= 30
+        && data.score is number
+        && data.score >= 0
+        && data.language in ['javascript', 'python', 'java']
+        && data.difficulty is number
+        && data.difficulty >= 1
+        && data.difficulty <= 5
+        && data.createdAt == request.time;
+    }
+
+    function isValidAchievement(data) {
+      return data.keys().hasAll(['badgeId', 'title', 'description', 'category', 'unlockedAt'])
+        && data.keys().hasOnly(['badgeId', 'title', 'description', 'category', 'unlockedAt'])
+        && data.badgeId is string
+        && data.badgeId.size() >= 1
+        && data.badgeId.size() <= 64
+        && data.title is string
+        && data.title.size() >= 1
+        && data.title.size() <= 50
+        && data.description is string
+        && data.description.size() <= 150
+        && data.category in ['speed', 'accuracy', 'polyglot', 'mastery']
+        && data.unlockedAt == request.time;
+    }
+
+    function isValidUserProfile(data) {
+      return data.keys().hasAll(['handle', 'codingSeconds', 'languagesMastered', 'earnedBadges', 'xp', 'updatedAt'])
+        && data.keys().hasOnly(['handle', 'codingSeconds', 'languagesMastered', 'earnedBadges', 'xp', 'updatedAt'])
+        && data.handle is string
+        && data.handle.size() >= 1
+        && data.handle.size() <= 30
+        && data.codingSeconds is number
+        && data.codingSeconds >= 0
+        && data.languagesMastered is list
+        && data.earnedBadges is list
+        && data.xp is number
+        && data.xp >= 0
+        && data.updatedAt == request.time;
+    }
+
+    // Global High Scores collection
+    match /high_scores/{scoreId} {
+      allow read, list: if true;
+      allow create: if isValidId(scoreId) && isValidHighScore(request.resource.data);
+      allow update, delete: if false;
+    }
+
+    // User Achievements collection
+    match /user_achievements/{achievementId} {
+      allow read, list: if true;
+      allow create: if isValidId(achievementId) && isValidAchievement(request.resource.data);
+      allow update, delete: if false;
+    }
+
+    // User Profiles collection
+    match /user_profiles/{profileId} {
+      allow read, list: if true;
+      allow create, update: if isValidId(profileId) && isValidUserProfile(request.resource.data);
+      allow delete: if false;
+    }
+  }
+}
