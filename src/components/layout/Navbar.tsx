@@ -38,6 +38,7 @@ import { XpToastFloating } from '../gamification/XpToastFloating';
 import { UserProfileModal } from '../profile/UserProfileModal';
 import { ShareProgressModal } from '../social/ShareProgressModal';
 import { CodeDuelLobbyModal } from '../social/CodeDuelLobbyModal';
+import { QuickStartGuideModal } from './QuickStartGuideModal';
 import { CommandPaletteModal } from '../editor/CommandPaletteModal';
 import { PWAInstallButton } from './PWAInstallButton';
 
@@ -55,6 +56,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentStepId, onSelectStep }) =
   const [showShare, setShowShare] = useState(false);
   const [showDuelLobby, setShowDuelLobby] = useState(false);
   const [showCommandPalette, setShowCommandPalette] = useState(false);
+  const [showGuide, setShowGuide] = useState(false);
 
   // Global Keyboard Shortcuts Listener (Ctrl+K, Ctrl+Enter, Ctrl+L)
   React.useEffect(() => {
@@ -554,10 +556,12 @@ export const Navbar: React.FC<NavbarProps> = ({ currentStepId, onSelectStep }) =
         onOpenHighScores={() => setShowHighScores(true)}
         onOpenManual={() => setShowManual(true)}
         onOpenDuelLobby={() => setShowDuelLobby(true)}
+        onOpenGuide={() => setShowGuide(true)}
         onToggleTheme={() => {
           // Trigger theme toggle event or handle theme
         }}
       />
+      <QuickStartGuideModal isOpen={showGuide} onClose={() => setShowGuide(false)} />
     </>
   );
 };

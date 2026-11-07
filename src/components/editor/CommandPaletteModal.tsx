@@ -18,6 +18,7 @@ import {
   Command,
   X,
   ArrowRight,
+  BookOpen,
 } from 'lucide-react';
 
 interface CommandItem {
@@ -40,6 +41,7 @@ interface CommandPaletteModalProps {
   onOpenHighScores: () => void;
   onOpenManual: () => void;
   onOpenDuelLobby: () => void;
+  onOpenGuide: () => void;
   onToggleTheme: () => void;
 }
 
@@ -54,6 +56,7 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
   onOpenHighScores,
   onOpenManual,
   onOpenDuelLobby,
+  onOpenGuide,
   onToggleTheme,
 }) => {
   const [query, setQuery] = useState('');
@@ -174,6 +177,17 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
       icon: <HelpCircle className="w-4 h-4 text-emerald-400" />,
       action: () => {
         onOpenManual();
+        onClose();
+      },
+    },
+    {
+      id: 'quick-start',
+      title: 'Quick Start Tutorial Guide',
+      category: 'System',
+      shortcut: 'Ctrl + G',
+      icon: <BookOpen className="w-4 h-4 text-cyan-400" />,
+      action: () => {
+        onOpenGuide();
         onClose();
       },
     },
