@@ -39,6 +39,7 @@ import { UserProfileModal } from '../profile/UserProfileModal';
 import { ShareProgressModal } from '../social/ShareProgressModal';
 import { CodeDuelLobbyModal } from '../social/CodeDuelLobbyModal';
 import { CommandPaletteModal } from '../editor/CommandPaletteModal';
+import { PWAInstallButton } from './PWAInstallButton';
 
 interface NavbarProps {
   currentStepId: string;
@@ -347,6 +348,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentStepId, onSelectStep }) =
           </div>
 
           {/* Sound Toggle (Always visible on all screen sizes) */}
+          <PWAInstallButton />
           <button
             onClick={() => {
               toggleSound();
