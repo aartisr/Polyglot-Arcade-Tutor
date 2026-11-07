@@ -18,14 +18,16 @@ import {
   Loader2,
   Edit2,
   Save,
+  Share2,
 } from 'lucide-react';
 
 interface UserProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onOpenShare?: () => void;
 }
 
-export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose }) => {
+export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, onOpenShare }) => {
   const xp = useWorkspaceStore((state) => state.xp);
   const completedSteps = useWorkspaceStore((state) => state.completedSteps);
   const codeMap = useWorkspaceStore((state) => state.codeMap);
@@ -218,26 +220,44 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
               </div>
             </div>
 
-            {/* Sync to Firestore Button */}
-            <button
-              onClick={handleSaveProfile}
-              disabled={isSyncing}
-              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-neon-cyan transition-all disabled:opacity-50"
-            >
-              {isSyncing ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : synced ? (
-                <>
-                  <CheckCircle2 className="w-4 h-4 stroke-[3]" />
-                  <span>SYNCED TO FIRESTORE!</span>
-                </>
-              ) : (
-                <>
-                  <Zap className="w-4 h-4 fill-current" />
-                  <span>SYNC STATS TO CLOUD</span>
-                </>
+            {/* Action Buttons: Sync and Share */}
+            <div className="flex items-center gap-2">
+              {onOpenShare && (
+                <button
+                  onClick={() => {
+                    arcadeAudio.playClick();
+                    onClose();
+                    onOpenShare();
+                  }}
+                  className="flex items-center gap-2 px-3.5 py-2 bg-pink-950/80 hover:bg-pink-900 border border-pink-700/60 text-pink-300 font-bold text-xs uppercase tracking-wider rounded-xl shadow-neon-magenta transition-all"
+                  title="Generate Social Media Share Card"
+                >
+                  <Share2 className="w-4 h-4 text-pink-400" />
+                  <span>Share Card</span>
+                </button>
               )}
-            </button>
+
+              {/* Sync to Firestore Button */}
+              <button
+                onClick={handleSaveProfile}
+                disabled={isSyncing}
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-neon-cyan transition-all disabled:opacity-50"
+              >
+                {isSyncing ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : synced ? (
+                  <>
+                    <CheckCircle2 className="w-4 h-4 stroke-[3]" />
+                    <span>SYNCED TO FIRESTORE!</span>
+                  </>
+                ) : (
+                  <>
+                    <Zap className="w-4 h-4 fill-current" />
+                    <span>SYNC TO CLOUD</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
 
           {/* Grid 2: Key Stats Cards */}

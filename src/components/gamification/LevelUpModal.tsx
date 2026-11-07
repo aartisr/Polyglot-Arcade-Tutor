@@ -4,7 +4,11 @@ import { useWorkspaceStore, dismissLevelUp, getRankForXp } from '../../store/wor
 import { arcadeAudio } from '../../utils/audio';
 import { Sparkles, Trophy, Zap, ArrowUpRight, X } from 'lucide-react';
 
-export const LevelUpModal: React.FC = () => {
+interface LevelUpModalProps {
+  onOpenShare?: () => void;
+}
+
+export const LevelUpModal: React.FC<LevelUpModalProps> = ({ onOpenShare }) => {
   const levelUpNotification = useWorkspaceStore((state) => state.levelUpNotification);
   const xp = useWorkspaceStore((state) => state.xp);
 
@@ -73,13 +77,28 @@ export const LevelUpModal: React.FC = () => {
           </div>
         </div>
 
-        <button
-          onClick={dismissLevelUp}
-          className="w-full py-3 px-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-sm uppercase tracking-wider rounded-xl shadow-lg shadow-cyan-500/25 transition-all flex items-center justify-center gap-2"
-        >
-          <span>CONTINUE HACKING</span>
-          <ArrowUpRight className="w-4 h-4 stroke-[3]" />
-        </button>
+        <div className="flex flex-col gap-2">
+          {onOpenShare && (
+            <button
+              onClick={() => {
+                dismissLevelUp();
+                onOpenShare();
+              }}
+              className="w-full py-2.5 px-4 bg-pink-500 hover:bg-pink-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-neon-magenta transition-all flex items-center justify-center gap-2"
+            >
+              <span>SHARE LEVEL UP SOCIAL CARD</span>
+              <ArrowUpRight className="w-4 h-4 stroke-[3]" />
+            </button>
+          )}
+
+          <button
+            onClick={dismissLevelUp}
+            className="w-full py-3 px-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-sm uppercase tracking-wider rounded-xl shadow-lg shadow-cyan-500/25 transition-all flex items-center justify-center gap-2"
+          >
+            <span>CONTINUE HACKING</span>
+            <ArrowUpRight className="w-4 h-4 stroke-[3]" />
+          </button>
+        </div>
       </div>
     </div>
   );

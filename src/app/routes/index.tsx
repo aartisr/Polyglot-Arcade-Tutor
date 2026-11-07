@@ -4,10 +4,12 @@ import { RootRoute } from './__root';
 import { LESSONS } from '../../data/lessonsData';
 import { useWorkspaceStore } from '../../store/workspaceStore';
 import { RealtimeLeaderboard } from '../../components/highscores/RealtimeLeaderboard';
-import { Gamepad2, Code2, ArrowRight, CheckCircle2, Sparkles, Keyboard, Target, Trophy, Shield, HelpCircle } from 'lucide-react';
+import { ShareProgressModal } from '../../components/social/ShareProgressModal';
+import { Gamepad2, Code2, ArrowRight, CheckCircle2, Sparkles, Keyboard, Target, Trophy, Shield, HelpCircle, Share2 } from 'lucide-react';
 
 const IndexComponent: React.FC = () => {
   const completedSteps = useWorkspaceStore((state) => state.completedSteps);
+  const [showShare, setShowShare] = React.useState(false);
 
   return (
     <div className="flex-1 flex flex-col overflow-y-auto bg-slate-950 text-slate-100 p-6 md:p-12">
@@ -32,8 +34,8 @@ const IndexComponent: React.FC = () => {
             Learn 2D game engine architecture from scratch! Switch seamlessly between <span className="text-yellow-400 font-semibold">JavaScript</span>, <span className="text-sky-400 font-semibold">Python</span>, and <span className="text-orange-400 font-semibold">Java</span> in real time using Monaco Editor and live HTML5 WebGL canvas execution.
           </p>
 
-          {/* Primary Action Button */}
-          <div className="flex items-center gap-4 pt-2">
+          {/* Primary Action Buttons */}
+          <div className="flex flex-wrap items-center gap-3 pt-2">
             <Link
               to="/tutor/$lessonId"
               params={{ lessonId: 'step-1' }}
@@ -42,6 +44,14 @@ const IndexComponent: React.FC = () => {
               <span>Launch Game Engine (Step 1)</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
+
+            <button
+              onClick={() => setShowShare(true)}
+              className="flex items-center gap-2 px-5 py-3 bg-slate-900 hover:bg-slate-800 text-sky-300 hover:text-sky-200 font-bold text-sm rounded-xl border border-sky-500/40 shadow-neon-cyan transition-all"
+            >
+              <Share2 className="w-4 h-4 text-sky-400" />
+              <span>Share Progress Card</span>
+            </button>
           </div>
         </div>
 
@@ -143,6 +153,8 @@ const IndexComponent: React.FC = () => {
           <RealtimeLeaderboard showSubmitForm={true} />
         </div>
       </div>
+
+      <ShareProgressModal isOpen={showShare} onClose={() => setShowShare(false)} />
     </div>
   );
 };

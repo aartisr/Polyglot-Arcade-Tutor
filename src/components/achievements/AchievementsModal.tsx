@@ -6,14 +6,15 @@ import {
   subscribeUnlockedAchievements
 } from '../../lib/achievementService';
 import { arcadeAudio } from '../../utils/audio';
-import { Award, X, Lock, CheckCircle2, Sparkles, Zap, Shield, Trophy } from 'lucide-react';
+import { Award, X, Lock, CheckCircle2, Sparkles, Zap, Shield, Trophy, Share2 } from 'lucide-react';
 
 interface AchievementsModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onOpenShare?: () => void;
 }
 
-export const AchievementsModal: React.FC<AchievementsModalProps> = ({ isOpen, onClose }) => {
+export const AchievementsModal: React.FC<AchievementsModalProps> = ({ isOpen, onClose, onOpenShare }) => {
   const [unlockedMap, setUnlockedMap] = useState<Record<string, UnlockedAchievementRecord>>({});
   const [filterCat, setFilterCat] = useState<string>('all');
 
@@ -141,7 +142,23 @@ export const AchievementsModal: React.FC<AchievementsModalProps> = ({ isOpen, on
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3 bg-slate-950 border-t border-slate-800 flex justify-end">
+        <div className="px-6 py-3 bg-slate-950 border-t border-slate-800 flex items-center justify-between">
+          <div>
+            {onOpenShare && (
+              <button
+                onClick={() => {
+                  arcadeAudio.playClick();
+                  onClose();
+                  onOpenShare();
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-pink-950 hover:bg-pink-900 border border-pink-700/60 text-pink-300 font-bold text-xs rounded-lg transition-colors shadow-neon-magenta"
+                title="Share your unlocked badges on social media"
+              >
+                <Share2 className="w-3.5 h-3.5 text-pink-400" />
+                <span>Share Medals Card</span>
+              </button>
+            )}
+          </div>
           <button
             onClick={() => {
               arcadeAudio.playClick();

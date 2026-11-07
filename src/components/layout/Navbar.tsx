@@ -23,6 +23,7 @@ import {
   Flame,
   Zap,
   User,
+  Share2,
 } from 'lucide-react';
 import { GameManualModal } from './GameManualModal';
 import { HighScoreModal } from '../highscores/HighScoreModal';
@@ -31,6 +32,7 @@ import { DailyQuestsModal, DAILY_QUESTS } from '../gamification/DailyQuestsModal
 import { LevelUpModal } from '../gamification/LevelUpModal';
 import { XpToastFloating } from '../gamification/XpToastFloating';
 import { UserProfileModal } from '../profile/UserProfileModal';
+import { ShareProgressModal } from '../social/ShareProgressModal';
 
 interface NavbarProps {
   currentStepId: string;
@@ -43,6 +45,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentStepId, onSelectStep }) =
   const [showBadges, setShowBadges] = useState(false);
   const [showQuests, setShowQuests] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [showShare, setShowShare] = useState(false);
 
   const activeLanguage = useWorkspaceStore((state) => state.activeLanguage);
   const completedSteps = useWorkspaceStore((state) => state.completedSteps);
@@ -153,6 +156,19 @@ export const Navbar: React.FC<NavbarProps> = ({ currentStepId, onSelectStep }) =
               <span>{comboStreak}x STREAK</span>
             </div>
           )}
+
+          {/* Share Progress Button */}
+          <button
+            onClick={() => {
+              arcadeAudio.playClick();
+              setShowShare(true);
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-sky-950/50 hover:bg-sky-900/60 border border-sky-500/60 text-sky-300 text-xs font-semibold rounded-lg transition-all shadow-neon-cyan"
+            title="Share Your Progress on Twitter / Social Media"
+          >
+            <Share2 className="w-4 h-4 text-sky-400" />
+            <span className="hidden sm:inline">Share</span>
+          </button>
 
           {/* User Profile Button */}
           <button
@@ -272,11 +288,20 @@ export const Navbar: React.FC<NavbarProps> = ({ currentStepId, onSelectStep }) =
 
       {/* Floating Notifications & Modals */}
       <XpToastFloating />
-      <LevelUpModal />
-      <UserProfileModal isOpen={showProfile} onClose={() => setShowProfile(false)} />
+      <LevelUpModal onOpenShare={() => setShowShare(true)} />
+      <UserProfileModal
+        isOpen={showProfile}
+        onClose={() => setShowProfile(false)}
+        onOpenShare={() => setShowShare(true)}
+      />
+      <ShareProgressModal isOpen={showShare} onClose={() => setShowShare(false)} />
       <GameManualModal isOpen={showManual} onClose={() => setShowManual(false)} />
       <HighScoreModal isOpen={showHighScores} onClose={() => setShowHighScores(false)} />
-      <AchievementsModal isOpen={showBadges} onClose={() => setShowBadges(false)} />
+      <AchievementsModal
+        isOpen={showBadges}
+        onClose={() => setShowBadges(false)}
+        onOpenShare={() => setShowShare(true)}
+      />
       <DailyQuestsModal isOpen={showQuests} onClose={() => setShowQuests(false)} />
     </>
   );
