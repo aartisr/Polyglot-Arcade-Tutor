@@ -69,6 +69,13 @@ service cloud.firestore {
         && data.createdAt == request.time;
     }
 
+    function isValidCoopSession(data) {
+      return data.keys().hasAll(['code', 'updatedAt'])
+        && data.keys().hasOnly(['code', 'cursors', 'updatedAt'])
+        && data.code is string
+        && data.updatedAt == request.time;
+    }
+
     // Global High Scores collection
     match /high_scores/{scoreId} {
       allow read, list: if true;
@@ -95,6 +102,11 @@ service cloud.firestore {
       allow read, list: if true;
       allow create, update: if isValidId(duelId) && isValidCodeDuel(request.resource.data);
       allow delete: if false;
+    }
+
+    // Cooperative Coding Sessions
+    match /coop_sessions/{sessionId} {
+      allow read, write: if isValidId(sessionId) && isValidCoopSession(request.resource.data);
     }
   }
 }

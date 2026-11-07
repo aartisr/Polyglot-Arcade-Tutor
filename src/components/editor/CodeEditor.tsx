@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Editor, { Monaco } from '@monaco-editor/react';
 import { useWorkspaceStore, updateCode } from '../../store/workspaceStore';
 import { gameRegistry } from '../../services/GameRegistry';
+import { CoopService } from '../../services/CoopService';
 import { LanguageSelector } from './LanguageSelector';
 import { BoilerplateSnippetsMenu } from './BoilerplateSnippetsMenu';
 import { TestResultsModal, TestResultItem } from './TestResultsModal';
@@ -10,7 +11,7 @@ import {
   SYNTHWAVE_NEON_THEME_ID,
   MATRIX_GREEN_THEME_ID,
 } from '../../utils/monacoThemes';
-import { Palette, Beaker } from 'lucide-react';
+import { Palette, Beaker, Users } from 'lucide-react';
 import { arcadeAudio } from '../../utils/audio';
 
 interface CodeEditorProps {
@@ -21,6 +22,10 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ currentStepId }) => {
   const [selectedTheme, setSelectedTheme] = useState<string>(SYNTHWAVE_NEON_THEME_ID);
   const [showTestModal, setShowTestModal] = useState<boolean>(false);
   const [testResults, setTestResults] = useState<TestResultItem[]>([]);
+  const [coopSessionId, setCoopSessionId] = useState<string | null>(null);
+
+  const editorRef = useRef<any>(null);
+  const coopServiceRef = useRef<CoopService | null>(null);
 
   const activeGameId = useWorkspaceStore((state) => state.activeGameId);
   const activeLanguage = useWorkspaceStore((state) => state.activeLanguage);
@@ -30,12 +35,47 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ currentStepId }) => {
   const currentCode = codeMap[activeLanguage] || '';
   const currentLesson = gameRegistry.getLesson(activeGameId, currentStepId);
 
-  const handleEditorChange = (value: string | undefined) => {
-    updateCode(activeLanguage, value || '');
+  useEffect(() => {
+    // Handle session joining via URL or prompt
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get('coopSession');
+    if (sessionId) {
+      setCoopSessionId(sessionId);
+    }
+    return () => {
+      if (coopServiceRef.current) {
+        coopServiceRef.current.stop();
+      }
+    };
+  }, []);
+
+  const handleEditorDidMount = (editor: any, monaco: Monaco) => {
+    editorRef.current = editor;
+    registerMonacoSynthwaveThemes(monaco);
+
+    editor.onDidChangeCursorPosition((e: any) => {
+      if (coopServiceRef.current) {
+        coopServiceRef.current.updateCursor(e.position, 'local-user');
+      }
+    });
+
+    if (coopSessionId) {
+      coopServiceRef.current = new CoopService(coopSessionId, editor, monaco);
+      coopServiceRef.current.start();
+    }
   };
 
-  const handleBeforeMount = (monaco: Monaco) => {
-    registerMonacoSynthwaveThemes(monaco);
+  const handleEditorChange = (value: string | undefined) => {
+    updateCode(activeLanguage, value || '');
+    if (coopServiceRef.current) {
+      coopServiceRef.current.updateCode(value || '');
+    }
+  };
+
+  const handleCursorChange = (event: any) => {
+    if (coopServiceRef.current && event.position) {
+      coopServiceRef.current.updateCursor(event.position, 'local-user');
+    }
   };
 
   const getMonacoLanguage = (lang: string) => {
@@ -73,8 +113,14 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ currentStepId }) => {
   return (
     <div className="flex flex-col h-full bg-slate-950 border-r border-slate-800 overflow-hidden">
       <div className="relative flex items-center justify-between bg-slate-900 border-b border-slate-800">
-        <div className="flex-1">
+        <div className="flex-1 flex items-center">
           <LanguageSelector currentStepId={currentStepId} />
+          {coopSessionId && (
+            <div className="ml-3 flex items-center gap-1.5 px-3 py-1 bg-indigo-950/70 border border-indigo-500/50 rounded-lg text-indigo-300 text-[10px] font-mono animate-pulse">
+              <Users className="w-3 h-3" />
+              <span>LIVE CO-OP: {coopSessionId}</span>
+            </div>
+          )}
         </div>
 
         {/* Snippets, Test Suite & Theme Selectors */}
@@ -113,7 +159,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ currentStepId }) => {
           theme={selectedTheme}
           value={currentCode}
           onChange={handleEditorChange}
-          beforeMount={handleBeforeMount}
+          onMount={handleEditorDidMount}
           options={{
             fontSize: 13.5,
             fontFamily: "'JetBrains Mono', 'Fira Code', monospace",

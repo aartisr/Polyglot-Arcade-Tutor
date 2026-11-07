@@ -108,6 +108,17 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["creatorName", "lessonId", "status", "createdAt"]
+    },
+    "CoopSession": {
+      "title": "Coop Coding Session",
+      "description": "Real-time collaborative coding session",
+      "type": "object",
+      "properties": {
+        "code": { "type": "string" },
+        "cursors": { "type": "object" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["code", "updatedAt"]
     }
   },
   "firestore": {
@@ -126,6 +137,10 @@
     "/code_duels/{duelId}": {
       "schema": "CodeDuel",
       "description": "1v1 code duel lobbys collection"
+    },
+    "/coop_sessions/{sessionId}": {
+      "schema": "CoopSession",
+      "description": "Real-time collaborative coding sessions"
     }
   }
 }
