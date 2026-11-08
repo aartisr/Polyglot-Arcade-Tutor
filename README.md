@@ -88,6 +88,8 @@ The production build generates `robots.txt`, `sitemap.xml`, `llms.txt`, and craw
 
 The adult-only production deployment for `pat.pcssiirobotics.org` uses Microsoft Clarity project `zafuff49tg`. The build adds its tracking script to the app and generated lesson guide pages only for the production Vercel deployment from this repository. Other deployments can opt in with their own `CLARITY_PROJECT_ID`; leave it unset for deployments intended for people under 18. Editor code and console output are masked from Clarity recordings.
 
+The official production build also uses the public PostHog project key for `https://us.i.posthog.com`. Other deployments can opt in with their own `POSTHOG_PROJECT_KEY` and `POSTHOG_HOST` build variables; both are required. The tracking script is added to the app and generated lesson guide pages and records page views, including in-app route changes. Interaction autocapture and PostHog session recording are disabled. Local and preview builds have no PostHog script by default.
+
 To check a code change before sharing it:
 
 ```bash

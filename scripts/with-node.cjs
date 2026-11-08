@@ -13,7 +13,7 @@ const supported = [];
 for (const candidate of candidates) {
   if (seen.has(candidate) || !existsSync(candidate)) continue;
   seen.add(candidate);
-  const result = spawnSync(candidate, ['--version'], { encoding: 'utf8', timeout: 1000 });
+  const result = spawnSync(candidate, ['--version'], { encoding: 'utf8', timeout: 5000 });
   const match = /^v?(\d+)\.(\d+)\.(\d+)/.exec(result.stdout || '');
   if (!match) continue;
   const version = match.slice(1).map(Number);

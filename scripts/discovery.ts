@@ -35,6 +35,31 @@ export function discoveryPlugin(): Plugin {
   y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
 })(window,document,"clarity","script","${clarityProjectId}");
 </script>` : '';
+  const customPosthogKey = process.env.POSTHOG_PROJECT_KEY?.trim();
+  const customPosthogHost = process.env.POSTHOG_HOST?.trim();
+  if (Boolean(customPosthogKey) !== Boolean(customPosthogHost)) {
+    throw new Error('Set POSTHOG_PROJECT_KEY and POSTHOG_HOST together');
+  }
+  const posthogKey = customPosthogKey
+    || (officialProduction ? 'phc_BigcLeA3vUtec5YGHrotNK79GxCpRYTwygRwbJGHRtJJ' : undefined);
+  const posthogHost = customPosthogHost
+    || (officialProduction ? 'https://us.i.posthog.com' : undefined);
+  if (posthogKey && !/^phc_[a-zA-Z0-9_-]+$/.test(posthogKey)) {
+    throw new Error('POSTHOG_PROJECT_KEY must be a public phc_ project key');
+  }
+  let posthogOrigin: string | undefined;
+  if (posthogHost) {
+    const url = new URL(posthogHost);
+    if (url.protocol !== 'https:' || url.username || url.password || url.pathname !== '/' || url.search || url.hash) {
+      throw new Error('POSTHOG_HOST must be an HTTPS origin');
+    }
+    posthogOrigin = url.origin;
+  }
+  const posthogScript = posthogKey && posthogOrigin ? `<script>
+!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],Object.defineProperty(u,"toString",{configurable:!0,enumerable:!0,writable:!0,value:function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e}}),Object.defineProperty(u.people,"toString",{configurable:!0,enumerable:!0,writable:!0,value:function(){return u.toString(1)+".people (stub)"}}),o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagResult isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey getNextSurveyStep identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+posthog.init(${JSON.stringify(posthogKey)}, { api_host: ${JSON.stringify(posthogOrigin)}, defaults: '2026-08-30', capture_pageview: 'history_change', autocapture: false, disable_session_recording: true, person_profiles: 'identified_only' });
+</script>` : '';
+  const analyticsScripts = `${clarityScript}\n${posthogScript}`;
   const absolute = (path: string) => `${origin}${path}`;
   const author = { '@type': 'Person', '@id': `${authorUrl}#person`, name: authorName, url: authorUrl };
   const guides = builtInGames.flatMap((game) => game.lessons.map((lesson) => ({
@@ -56,7 +81,7 @@ export function discoveryPlugin(): Plugin {
 <meta property="og:url" content="${absolute(path)}"><meta property="og:image" content="${absolute('/social-card.png')}">
 <meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">${jsonLd(structuredData)}</script>
-${clarityScript}
+${analyticsScripts}
 <style>body{margin:0;background:#020b1c;color:#e5f0f8;font:16px/1.65 system-ui,sans-serif}main{max-width:850px;margin:auto;padding:3rem 1.25rem 5rem}a{color:#67e8f9}h1{font-size:clamp(2rem,5vw,3.5rem);line-height:1.15}h2{margin-top:2rem}p,li{max-width:72ch}.eyebrow{color:#67e8f9;font-weight:700;letter-spacing:.1em;text-transform:uppercase;font-size:.8rem}.card{background:#0d1b30;border:1px solid #284158;border-radius:1rem;padding:1.25rem;margin:1rem 0}.steps{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}footer{border-top:1px solid #284158;margin-top:3rem;padding-top:1rem;color:#94a3b8;font-size:.75rem}footer a{color:inherit}footer a:hover{color:#67e8f9}</style>
 </head><body><main>${body}<footer>By <a rel="author" href="${authorUrl}">${authorName}</a> · <a href="${repositoryUrl}">Source and citation</a> · <a href="https://aartisr.github.io/Polyglot-Arcade-Tutor/">GitHub Pages docs</a> · <a href="${repositoryUrl}/wiki">Wiki</a> · <a href="/">Open ${projectName}</a></footer></main></body></html>`;
 
@@ -72,7 +97,7 @@ ${clarityScript}
     <meta property="og:image:height" content="630">
     <meta property="og:image:alt" content="PolyGlot Arcade Tutor, created by Aarti S Ravikumar">
     <meta name="twitter:image" content="${absolute('/social-card.png')}">
-    ${clarityScript}
+    ${analyticsScripts}
     <script type="application/ld+json">${jsonLd({
       '@context': 'https://schema.org',
       '@graph': [
