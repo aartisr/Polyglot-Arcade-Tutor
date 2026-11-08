@@ -52,6 +52,7 @@ The repository includes a Firebase client configuration, so the interface can st
 2. Read **Step 1** in the lesson panel. Look for the `TODO` comments in the code editor.
 3. Choose **JavaScript** to see your edits run on the canvas. Add or change a little code, then select **Run Canvas** (or press **Ctrl/Cmd + Enter**).
 4. Select **Run Tests** to check the lesson. If a check fails, read its hint and try again.
+   If you do not know how to fill a `TODO`, use **Stuck on a TODO?** in the lesson panel to reveal one hint at a time or view a completed example. Viewing the example does not replace your editor code.
 5. Move to the next step. Use **Compare Languages** when you want to see how the idea looks in Python or Java.
 
 At the final lesson, choose **Play game** to open the completed reference game. Choose **Download game** for a standalone `.html` file that opens in a browser and includes touch controls. This playable export uses the registered game engine. **Download my code** separately saves what is in your current editor as `.js`, `.py`, or `.java`; the playable export does not incorporate unfinished editor changes.

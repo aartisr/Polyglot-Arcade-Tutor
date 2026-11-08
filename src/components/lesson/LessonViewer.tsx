@@ -14,7 +14,8 @@ import { arcadeAudio } from '../../utils/audio';
 import { getGameById } from '../../data/gamesRegistry';
 import { unlockAchievement } from '../../lib/achievementService';
 import { LanguageCompareModal } from './LanguageCompareModal';
-import { BookOpen, CheckCircle2, XCircle, Play, HelpCircle, Code2, ArrowRight, Lightbulb, Sparkles } from 'lucide-react';
+import { LessonHelp } from './LessonHelp';
+import { BookOpen, CheckCircle2, XCircle, Play, Code2, ArrowRight, Sparkles } from 'lucide-react';
 
 interface LessonViewerProps {
   lesson: LessonStep;
@@ -24,7 +25,6 @@ interface LessonViewerProps {
 
 export const LessonViewer: React.FC<LessonViewerProps> = ({ lesson, onNavigateNext, isFinalLesson = false }) => {
   const [showCompareModal, setShowCompareModal] = useState(false);
-  const [activeHintIndex, setActiveHintIndex] = useState<number | null>(null);
 
   const activeLanguage = useWorkspaceStore((state) => state.activeLanguage);
   const activeGameId = useWorkspaceStore((state) => state.activeGameId);
@@ -135,6 +135,8 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({ lesson, onNavigateNe
             </p>
           ))}
         </div>
+
+        <LessonHelp key={`${activeGameId}:${lesson.id}:${activeLanguage}`} lesson={lesson} language={activeLanguage} />
 
         {/* Concepts & Interactive Diagrams */}
         <div className="space-y-4">
@@ -273,33 +275,6 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({ lesson, onNavigateNe
             })}
           </div>
 
-          {/* Hints Accordion */}
-          {lesson.hints && lesson.hints.length > 0 && (
-            <div className="pt-2 border-t border-slate-800/80">
-              <div className="text-xs font-medium text-slate-400 mb-2 flex items-center gap-1.5">
-                <Lightbulb className="w-3.5 h-3.5 text-amber-400" />
-                <span>Need a Hint?</span>
-              </div>
-              <div className="space-y-1.5">
-                {lesson.hints.map((hint, idx) => (
-                  <div key={idx} className="bg-slate-900 rounded border border-slate-800">
-                    <button
-                      onClick={() => setActiveHintIndex(activeHintIndex === idx ? null : idx)}
-                      className="w-full px-3 py-1.5 text-left text-xs font-mono text-slate-300 hover:text-cyan-300 flex items-center justify-between"
-                    >
-                      <span>Hint #{idx + 1}</span>
-                      <span className="text-slate-500">{activeHintIndex === idx ? 'Hide' : 'Show'}</span>
-                    </button>
-                    {activeHintIndex === idx && (
-                      <div className="px-3 py-2 bg-slate-950 text-xs text-amber-200/90 border-t border-slate-800 font-sans">
-                        {hint}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Step Navigation Button */}
