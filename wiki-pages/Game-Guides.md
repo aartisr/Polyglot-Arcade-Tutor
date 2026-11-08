@@ -12,4 +12,4 @@ Each game has four lessons. The [Pages lesson index](https://aartisr.github.io/P
 
 [Getting Started](Getting-Started) · [Wiki Home](Home)
 
-Created by [Aarti S Ravikumar](https://ai-aarti.com/).
+<small>By <a href="https://ai-aarti.com/" rel="author">Aarti S Ravikumar</a></small>

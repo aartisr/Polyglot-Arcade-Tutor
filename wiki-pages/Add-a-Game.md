@@ -11,4 +11,4 @@ The interface, live discovery guide, and sitemap read from the registry. To remo
 
 [Detailed Pages contributor guide](https://aartisr.github.io/Polyglot-Arcade-Tutor/add-a-game.html) · [Wiki Home](Home)
 
-Created by [Aarti S Ravikumar](https://ai-aarti.com/).
+<small>By <a href="https://ai-aarti.com/" rel="author">Aarti S Ravikumar</a></small>

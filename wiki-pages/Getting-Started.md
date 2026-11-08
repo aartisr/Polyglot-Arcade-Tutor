@@ -10,4 +10,4 @@
 
 [Detailed Pages guide](https://aartisr.github.io/Polyglot-Arcade-Tutor/getting-started.html) · [Games](Game-Guides) · [Wiki Home](Home)
 
-Created by [Aarti S Ravikumar](https://ai-aarti.com/).
+<small>By <a href="https://ai-aarti.com/" rel="author">Aarti S Ravikumar</a></small>

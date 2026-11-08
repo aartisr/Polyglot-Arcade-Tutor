@@ -27,4 +27,4 @@ Every lesson has `TODO` tasks, progressive hints, a worked example, and checks. 
 
 [Getting started](getting-started.html) · [Wiki game guide](https://github.com/aartisr/Polyglot-Arcade-Tutor/wiki/Game-Guides) · [Live tutor](https://pat.pcssiirobotics.org/)
 
-Created by [Aarti S Ravikumar](https://ai-aarti.com/).
+<small>By <a href="https://ai-aarti.com/" rel="author">Aarti S Ravikumar</a></small>

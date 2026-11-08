@@ -20,4 +20,4 @@ The app is designed for desktop and mobile. On touch devices, use the on-screen 
 
 [Browse games and lessons](games.html) · [Read common questions](faq.html) · [Open the Wiki](https://github.com/aartisr/Polyglot-Arcade-Tutor/wiki/Getting-Started)
 
-Created by [Aarti S Ravikumar](https://ai-aarti.com/).
+<small>By <a href="https://ai-aarti.com/" rel="author">Aarti S Ravikumar</a></small>

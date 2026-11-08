@@ -1,10 +1,12 @@
 # PolyGlot Arcade Tutor 🎮
 
-**Created by [Aarti S Ravikumar](https://ai-aarti.com/).** [Open the live tutor](https://pat.pcssiirobotics.org/) · [Browse the lesson guide](https://pat.pcssiirobotics.org/discover/) · [Read GitHub Pages docs](https://aartisr.github.io/Polyglot-Arcade-Tutor/) · [Visit the Wiki](https://github.com/aartisr/Polyglot-Arcade-Tutor/wiki)
+[Open the live tutor](https://pat.pcssiirobotics.org/) · [Browse the lesson guide](https://pat.pcssiirobotics.org/discover/) · [Read GitHub Pages docs](https://aartisr.github.io/Polyglot-Arcade-Tutor/) · [Visit the Wiki](https://github.com/aartisr/Polyglot-Arcade-Tutor/wiki)
 
 **Learn to build a game, one small step at a time.** PolyGlot Arcade Tutor is a browser based coding playground made for the **Hack Club Haven game jam hosted by PCSS II Robotics Club** on **November 14–15, 2026**. The jam welcomes teens, including people who have never coded before. This project is my way of making that invitation real: open a lesson, change a few lines, see what happens, and keep building with friends.
 
-## A note from the author
+<details>
+<summary>A note from the author</summary>
+
 
 When I read the Haven invitation, the line that stayed with me was the answer to “What if I don’t know how to code?”: **“we’ll teach you there!”** I wanted this repo to help deliver on that promise. A first time maker should be able to find a starting point without feeling lost, and a more experienced maker should have room to experiment and help someone else.
 
@@ -12,7 +14,9 @@ That is why I made PolyGlot Arcade Tutor. It turns game programming ideas into s
 
 If you use this at the jam, please share what you changed, explain one idea to another participant, and make space for a beginner on your team. The best outcome is more young people feeling that they belong in a creative coding community.
 
-— **[Aarti S Ravikumar](https://ai-aarti.com/)**
+— [Aarti S Ravikumar](https://ai-aarti.com/)
+
+</details>
 
 ## What is in this repo?
 
@@ -109,3 +113,5 @@ For runtime registration, call `gameRegistry.register(game)` and `gameRegistry.u
 Python and Java remain simulated preview modes for every game; adding actual execution for either language requires a separate runner implementation.
 
 The playable HTML export packages the game's registered engine. Keep engine methods self-contained so they can be serialized into the file, or provide `standaloneHtml(difficulty)` on the game definition for an engine that needs external helpers. The export does not package the editor's source code; use **Download my code** for that file.
+
+<small>By <a href="https://ai-aarti.com/" rel="author">Aarti S Ravikumar</a></small>

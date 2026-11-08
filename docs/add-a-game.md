@@ -20,4 +20,4 @@ Python and Java remain simulated preview modes. Adding real execution for either
 
 [Source overview](https://github.com/aartisr/Polyglot-Arcade-Tutor#add-or-remove-a-game) · [Wiki contributor guide](https://github.com/aartisr/Polyglot-Arcade-Tutor/wiki/Add-a-Game) · [Live tutor](https://pat.pcssiirobotics.org/) · [Documentation home](index.html)
 
-Created by [Aarti S Ravikumar](https://ai-aarti.com/).
+<small>By <a href="https://ai-aarti.com/" rel="author">Aarti S Ravikumar</a></small>

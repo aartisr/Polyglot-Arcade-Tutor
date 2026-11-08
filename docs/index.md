@@ -5,7 +5,7 @@ description: Learn how to use, extend, and cite PolyGlot Arcade Tutor by Aarti S
 
 # PolyGlot Arcade Tutor
 
-**An approachable path into retro game development.** Created by [Aarti S Ravikumar](https://ai-aarti.com/).
+**An approachable path into retro game development.**
 
 [Open the live tutor](https://pat.pcssiirobotics.org/) · [Explore all lessons](https://pat.pcssiirobotics.org/discover/) · [Source repository](https://github.com/aartisr/Polyglot-Arcade-Tutor)
 
@@ -25,4 +25,4 @@ The [GitHub Wiki](https://github.com/aartisr/Polyglot-Arcade-Tutor/wiki) provide
 
 ---
 
-**Author:** [Aarti S Ravikumar](https://ai-aarti.com/) · [Cite this project](citation.html)
+<small>By <a href="https://ai-aarti.com/" rel="author">Aarti S Ravikumar</a> · <a href="citation.html">Cite this project</a></small>
