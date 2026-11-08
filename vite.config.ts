@@ -6,6 +6,23 @@ import { discoveryPlugin } from './scripts/discovery';
 
 export default defineConfig(() => {
   return {
+    build: {
+      rolldownOptions: {
+        output: {
+          strictExecutionOrder: true,
+          codeSplitting: {
+            groups: [
+              {
+                name: 'firebase-sdk',
+                test: /node_modules[\\/](?:@firebase|firebase)[\\/]/,
+                minSize: 20 * 1024,
+                maxSize: 250 * 1024,
+              },
+            ],
+          },
+        },
+      },
+    },
     plugins: [
       {
         name: 'retire-development-service-worker',
