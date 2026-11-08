@@ -333,6 +333,8 @@ const IndexComponent: React.FC = () => {
           <span>Created by <a className="text-cyan-300 hover:underline" rel="author" href="https://ai-aarti.com/">Aarti S Ravikumar</a></span>
           <nav aria-label="Project information" className="flex flex-wrap gap-4">
             <a className="hover:text-cyan-300" href="/discover/">Explore all lessons</a>
+            <a className="hover:text-cyan-300" href="https://aartisr.github.io/Polyglot-Arcade-Tutor/">Documentation</a>
+            <a className="hover:text-cyan-300" href="https://github.com/aartisr/Polyglot-Arcade-Tutor/wiki">Wiki</a>
             <a className="hover:text-cyan-300" href="https://github.com/aartisr/Polyglot-Arcade-Tutor">Source and citation</a>
           </nav>
         </footer>

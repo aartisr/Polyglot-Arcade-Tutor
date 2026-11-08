@@ -1,0 +1,14 @@
+title: PolyGlot Arcade Tutor Docs
+description: Guides for PolyGlot Arcade Tutor, created by Aarti S Ravikumar.
+author: Aarti S Ravikumar
+url: https://aartisr.github.io
+baseurl: /Polyglot-Arcade-Tutor
+theme: jekyll-theme-cayman
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default

@@ -39,7 +39,7 @@ export function discoveryPlugin(): Plugin {
 <meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">${jsonLd(structuredData)}</script>
 <style>body{margin:0;background:#020b1c;color:#e5f0f8;font:16px/1.65 system-ui,sans-serif}main{max-width:850px;margin:auto;padding:3rem 1.25rem 5rem}a{color:#67e8f9}h1{font-size:clamp(2rem,5vw,3.5rem);line-height:1.15}h2{margin-top:2rem}p,li{max-width:72ch}.eyebrow{color:#67e8f9;font-weight:700;letter-spacing:.1em;text-transform:uppercase;font-size:.8rem}.card{background:#0d1b30;border:1px solid #284158;border-radius:1rem;padding:1.25rem;margin:1rem 0}.steps{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}footer{border-top:1px solid #284158;margin-top:3rem;padding-top:1rem;color:#b5cad8}</style>
-</head><body><main>${body}<footer>Created by <a rel="author" href="${authorUrl}">${authorName}</a> · <a href="${repositoryUrl}">Source and citation</a> · <a href="/">Open ${projectName}</a></footer></main></body></html>`;
+</head><body><main>${body}<footer>Created by <a rel="author" href="${authorUrl}">${authorName}</a> · <a href="${repositoryUrl}">Source and citation</a> · <a href="https://aartisr.github.io/Polyglot-Arcade-Tutor/">GitHub Pages docs</a> · <a href="${repositoryUrl}/wiki">Wiki</a> · <a href="/">Open ${projectName}</a></footer></main></body></html>`;
 
   return {
     name: 'search-discovery',
@@ -79,7 +79,7 @@ export function discoveryPlugin(): Plugin {
       const hubBody = `<p class="eyebrow">Learn game development</p><h1>${projectName}</h1>
 <p>${description}</p>
 <p>Play a finished game, then follow four short lessons in each game. JavaScript runs on the browser canvas. Python and Java are code comparison views with simulated previews.</p>
-<p><a href="/">Launch the interactive tutor</a> · <a href="${repositoryUrl}">View the open source repository</a></p>
+<p><a href="/">Launch the interactive tutor</a> · <a href="https://aartisr.github.io/Polyglot-Arcade-Tutor/">Read GitHub Pages docs</a> · <a href="${repositoryUrl}/wiki">Visit the Wiki</a> · <a href="${repositoryUrl}">View the open source repository</a></p>
 <h2>Games and lessons</h2>${builtInGames.map((game) => `<section class="card"><h3>${escapeHtml(game.title)}</h3><p>${escapeHtml(game.description)}</p><ol>${game.lessons.map((lesson) => `<li><a href="/discover/${encodeURIComponent(game.id)}/${encodeURIComponent(lesson.id)}.html">Step ${lesson.stepNumber}: ${escapeHtml(lesson.title)}</a></li>`).join('')}</ol></section>`).join('')}
 <h2>Quick answers</h2><div class="card"><h3>Who created PolyGlot Arcade Tutor?</h3><p><a href="${authorUrl}">${authorName}</a> created the project. The <a href="${repositoryUrl}/blob/main/CITATION.cff">citation file</a> gives the preferred attribution.</p><h3>Can I play the finished games?</h3><p>Yes. Use Play game in the tutor. After the final lesson, Download game saves a standalone HTML file with touch controls.</p></div>`;
       add('discover/index.html', page(`${projectName} by ${authorName} | Game development lessons`, description, '/discover/', hubBody, {

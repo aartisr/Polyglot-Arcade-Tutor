@@ -1,6 +1,6 @@
 # PolyGlot Arcade Tutor 🎮
 
-**Created by [Aarti S Ravikumar](https://ai-aarti.com/).** [Open the live tutor](https://pat.pcssiirobotics.org/) · [Browse the lesson guide](https://pat.pcssiirobotics.org/discover/)
+**Created by [Aarti S Ravikumar](https://ai-aarti.com/).** [Open the live tutor](https://pat.pcssiirobotics.org/) · [Browse the lesson guide](https://pat.pcssiirobotics.org/discover/) · [Read GitHub Pages docs](https://aartisr.github.io/Polyglot-Arcade-Tutor/) · [Visit the Wiki](https://github.com/aartisr/Polyglot-Arcade-Tutor/wiki)
 
 **Learn to build a game, one small step at a time.** PolyGlot Arcade Tutor is a browser based coding playground made for the **Hack Club Haven game jam hosted by PCSS II Robotics Club** on **November 14–15, 2026**. The jam welcomes teens, including people who have never coded before. This project is my way of making that invitation real: open a lesson, change a few lines, see what happens, and keep building with friends.
 
