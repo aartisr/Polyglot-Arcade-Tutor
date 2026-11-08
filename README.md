@@ -33,7 +33,7 @@ If you use this at the jam, please share what you changed, explain one idea to a
 
 ## Try it locally
 
-You need [Node.js 22.12 or newer within the 22.x line](https://nodejs.org/en/download), [Bun](https://bun.sh/), and a modern browser. With nvm, run `nvm install && nvm use` in the project directory. The `.nvmrc` selects Node 22.12.0; any newer 22.x release also meets the version check.
+You need [Node.js 22.12 or newer](https://nodejs.org/en/download), [Bun](https://bun.sh/), and a modern browser. The project commands use a compatible Node found on your `PATH`, even if an older nvm version comes first. With nvm, `nvm install && nvm use` selects the project version from `.nvmrc` for the current terminal. Run `bun run check:node` to see the Node executable that the project will use.
 
 1. Download or clone this repository and open a terminal in its folder.
 2. Install dependencies:
@@ -82,7 +82,7 @@ The checked in `firebase-applet-config.json` points to a specific Firebase proje
 
 Import this repository into Vercel with the project root as the Root Directory. `vercel.json` selects the Vite build, installs from the committed Bun lockfile, publishes `dist`, and rewrites lesson URLs to the app entry point. No server process or build environment variables are needed for the core lessons. Set up your own Firebase project and authorize the deployed domain in Firebase Authentication if you want sign-in and shared features. The committed lockfile uses the public npm registry; `.npmrc` is ignored so each developer can set local registry preferences.
 
-The `engines.node` range requires Node 22.12+ and limits deployments to Node 22. Vercel selects the latest available 22.x release for that range. The development, build, and preview commands check the running Node version before starting Vite.
+The `engines.node` range requires Node 22.12+ without pinning a major version, so Vercel can use its latest supported Node release. The development, build, and preview commands select a compatible Node locally before starting Vite.
 
 The production build generates `robots.txt`, `sitemap.xml`, `llms.txt`, and crawlable lesson guide pages from the game registry. Its canonical URL defaults to `https://pat.pcssiirobotics.org/`; set `PUBLIC_SITE_URL` during the build if you deploy your own copy on another domain. Submit that deployment's sitemap to your search engine webmaster tools after it is public.
 
