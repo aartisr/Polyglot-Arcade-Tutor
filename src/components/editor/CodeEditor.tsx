@@ -168,7 +168,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ currentStepId }) => {
         </div>
       </div>
       
-      <div className="flex-1 relative">
+      <div className="flex-1 relative" data-clarity-mask="true">
         <Editor
           height="100%"
           language={getMonacoLanguage(activeLanguage)}

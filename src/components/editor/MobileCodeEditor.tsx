@@ -44,6 +44,7 @@ export const MobileCodeEditor: React.FC<MobileCodeEditorProps> = ({ currentStepI
         </div>
       </div>
       <textarea
+        data-clarity-mask="true"
         aria-label={`${activeLanguage} code editor`}
         value={currentCode}
         onChange={(event) => updateCode(activeLanguage, event.target.value)}

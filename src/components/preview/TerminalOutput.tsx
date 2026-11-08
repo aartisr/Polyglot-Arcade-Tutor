@@ -67,7 +67,7 @@ export const TerminalOutput: React.FC = () => {
       </div>
 
       {/* Log Output Area */}
-      <div ref={scrollRef} className="flex-1 p-3 overflow-y-auto space-y-1 bg-slate-950/90">
+      <div ref={scrollRef} data-clarity-mask="true" className="flex-1 p-3 overflow-y-auto space-y-1 bg-slate-950/90">
         {logs.length === 0 ? (
           <div className="text-slate-600 italic py-4 text-center">Console output empty. Run code to view output logs.</div>
         ) : (

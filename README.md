@@ -86,6 +86,8 @@ The `engines.node` range requires Node 22.12+ without pinning a major version, s
 
 The production build generates `robots.txt`, `sitemap.xml`, `llms.txt`, and crawlable lesson guide pages from the game registry. Its canonical URL defaults to `https://pat.pcssiirobotics.org/`; set `PUBLIC_SITE_URL` during the build if you deploy your own copy on another domain. Submit that deployment's sitemap to your search engine webmaster tools after it is public.
 
+The adult-only production deployment for `pat.pcssiirobotics.org` uses Microsoft Clarity project `zafuff49tg`. The build adds its tracking script to the app and generated lesson guide pages only for the production Vercel deployment from this repository. Other deployments can opt in with their own `CLARITY_PROJECT_ID`; leave it unset for deployments intended for people under 18. Editor code and console output are masked from Clarity recordings.
+
 To check a code change before sharing it:
 
 ```bash

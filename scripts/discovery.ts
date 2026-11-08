@@ -18,6 +18,23 @@ const plainText = (value: string) => value.replace(/\*\*/g, '').replace(/`/g, ''
 export function discoveryPlugin(): Plugin {
   const origin = new URL(process.env.PUBLIC_SITE_URL || 'https://pat.pcssiirobotics.org').origin;
   if (!origin.startsWith('https://')) throw new Error('PUBLIC_SITE_URL must use HTTPS');
+  const officialProduction = process.env.VERCEL_ENV === 'production'
+    && process.env.VERCEL_GIT_PROVIDER === 'github'
+    && process.env.VERCEL_GIT_REPO_OWNER === 'aartisr'
+    && process.env.VERCEL_GIT_REPO_SLUG === 'Polyglot-Arcade-Tutor'
+    && origin === 'https://pat.pcssiirobotics.org';
+  const clarityProjectId = process.env.CLARITY_PROJECT_ID?.trim()
+    || (officialProduction ? 'zafuff49tg' : undefined);
+  if (clarityProjectId && !/^[a-zA-Z0-9]+$/.test(clarityProjectId)) {
+    throw new Error('CLARITY_PROJECT_ID must contain only letters and numbers');
+  }
+  const clarityScript = clarityProjectId ? `<script>
+(function(c,l,a,r,i,t,y){
+  c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+  t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+  y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+})(window,document,"clarity","script","${clarityProjectId}");
+</script>` : '';
   const absolute = (path: string) => `${origin}${path}`;
   const author = { '@type': 'Person', '@id': `${authorUrl}#person`, name: authorName, url: authorUrl };
   const guides = builtInGames.flatMap((game) => game.lessons.map((lesson) => ({
@@ -39,6 +56,7 @@ export function discoveryPlugin(): Plugin {
 <meta property="og:url" content="${absolute(path)}"><meta property="og:image" content="${absolute('/social-card.png')}">
 <meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">${jsonLd(structuredData)}</script>
+${clarityScript}
 <style>body{margin:0;background:#020b1c;color:#e5f0f8;font:16px/1.65 system-ui,sans-serif}main{max-width:850px;margin:auto;padding:3rem 1.25rem 5rem}a{color:#67e8f9}h1{font-size:clamp(2rem,5vw,3.5rem);line-height:1.15}h2{margin-top:2rem}p,li{max-width:72ch}.eyebrow{color:#67e8f9;font-weight:700;letter-spacing:.1em;text-transform:uppercase;font-size:.8rem}.card{background:#0d1b30;border:1px solid #284158;border-radius:1rem;padding:1.25rem;margin:1rem 0}.steps{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}footer{border-top:1px solid #284158;margin-top:3rem;padding-top:1rem;color:#94a3b8;font-size:.75rem}footer a{color:inherit}footer a:hover{color:#67e8f9}</style>
 </head><body><main>${body}<footer>By <a rel="author" href="${authorUrl}">${authorName}</a> · <a href="${repositoryUrl}">Source and citation</a> · <a href="https://aartisr.github.io/Polyglot-Arcade-Tutor/">GitHub Pages docs</a> · <a href="${repositoryUrl}/wiki">Wiki</a> · <a href="/">Open ${projectName}</a></footer></main></body></html>`;
 
@@ -54,6 +72,7 @@ export function discoveryPlugin(): Plugin {
     <meta property="og:image:height" content="630">
     <meta property="og:image:alt" content="PolyGlot Arcade Tutor, created by Aarti S Ravikumar">
     <meta name="twitter:image" content="${absolute('/social-card.png')}">
+    ${clarityScript}
     <script type="application/ld+json">${jsonLd({
       '@context': 'https://schema.org',
       '@graph': [
