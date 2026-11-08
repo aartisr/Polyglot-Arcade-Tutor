@@ -5,7 +5,8 @@ const projectName = 'PolyGlot Arcade Tutor';
 const authorName = 'Aarti S Ravikumar';
 const authorUrl = 'https://ai-aarti.com/';
 const repositoryUrl = 'https://github.com/aartisr/Polyglot-Arcade-Tutor';
-const description = 'Learn to build retro 2D games through interactive JavaScript lessons and Python and Java code examples. Created by Aarti S Ravikumar.';
+const intro = 'Learn to build retro 2D games through interactive JavaScript lessons and Python and Java code examples.';
+const description = `${intro} Created by ${authorName}.`;
 
 const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (character) => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
@@ -77,12 +78,12 @@ export function discoveryPlugin(): Plugin {
       add('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((path) => `  <url><loc>${escapeXml(absolute(path))}</loc></url>`).join('\n')}\n</urlset>\n`);
 
       const hubBody = `<p class="eyebrow">Learn game development</p><h1>${projectName}</h1>
-<p>${description}</p>
+<p>${intro}</p>
 <p>Play a finished game, then follow four short lessons in each game. JavaScript runs on the browser canvas. Python and Java are code comparison views with simulated previews.</p>
 <p><a href="/">Launch the interactive tutor</a> · <a href="https://aartisr.github.io/Polyglot-Arcade-Tutor/">Read GitHub Pages docs</a> · <a href="${repositoryUrl}/wiki">Visit the Wiki</a> · <a href="${repositoryUrl}">View the open source repository</a></p>
 <h2>Games and lessons</h2>${builtInGames.map((game) => `<section class="card"><h3>${escapeHtml(game.title)}</h3><p>${escapeHtml(game.description)}</p><ol>${game.lessons.map((lesson) => `<li><a href="/discover/${encodeURIComponent(game.id)}/${encodeURIComponent(lesson.id)}.html">Step ${lesson.stepNumber}: ${escapeHtml(lesson.title)}</a></li>`).join('')}</ol></section>`).join('')}
-<h2>Quick answers</h2><div class="card"><h3>Who created PolyGlot Arcade Tutor?</h3><p><a href="${authorUrl}">${authorName}</a> created the project. The <a href="${repositoryUrl}/blob/main/CITATION.cff">citation file</a> gives the preferred attribution.</p><h3>Can I play the finished games?</h3><p>Yes. Use Play game in the tutor. After the final lesson, Download game saves a standalone HTML file with touch controls.</p></div>`;
-      add('discover/index.html', page(`${projectName} by ${authorName} | Game development lessons`, description, '/discover/', hubBody, {
+<h2>Quick answers</h2><div class="card"><h3>Can I play the finished games?</h3><p>Yes. Use Play game in the tutor. After the final lesson, Download game saves a standalone HTML file with touch controls.</p></div>`;
+      add('discover/index.html', page(`${projectName} | Game development lessons`, description, '/discover/', hubBody, {
         '@context': 'https://schema.org', '@type': 'CollectionPage', name: projectName,
         url: absolute('/discover/'), description, author,
         hasPart: guides.map(({ path }) => ({ '@type': 'LearningResource', url: absolute(path) })),
@@ -90,7 +91,7 @@ export function discoveryPlugin(): Plugin {
 
       for (const { game, lesson, path } of guides) {
         const summary = `Step ${lesson.stepNumber} of ${game.title} by ${authorName}. ${plainText(lesson.description).slice(0, 145)}`;
-        const title = `${lesson.title} | ${projectName} by ${authorName}`;
+        const title = `${lesson.title} | ${projectName}`;
         const body = `<p class="eyebrow">${escapeHtml(game.title)} · Step ${lesson.stepNumber} of ${game.lessons.length}</p>
 <h1>${escapeHtml(lesson.title)}</h1><p>${escapeHtml(plainText(lesson.description))}</p>
 <div class="card"><h2>What you will learn</h2><ul>${lesson.concepts.map((concept) => `<li><strong>${escapeHtml(concept.title)}</strong>: ${escapeHtml(concept.description)}</li>`).join('')}</ul></div>
