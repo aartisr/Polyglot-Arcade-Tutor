@@ -241,8 +241,8 @@ public class NeonDungeonGame {
         description: 'Verify player coordinates x: 180 and y: 180 are declared.',
         hint: 'Check that player x and y variables or object keys exist and equal 180.',
         check: (code: string) => {
-          const hasX = /x\s*[:=]\s*180/i.test(code) || /playerX\s*=\s*180/i.test(code);
-          const hasY = /y\s*[:=]\s*180/i.test(code) || /playerY\s*=\s*180/i.test(code);
+          const hasX = /['"]?x['"]?\s*[:=]\s*180/i.test(code) || /playerX\s*=\s*180/i.test(code);
+          const hasY = /['"]?y['"]?\s*[:=]\s*180/i.test(code) || /playerY\s*=\s*180/i.test(code);
           if (hasX && hasY) {
             return { passed: true, message: 'Player coordinates (180, 180) configured successfully!' };
           }

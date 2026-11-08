@@ -60,9 +60,7 @@ function render() {
   ctx.fillStyle = '#030712';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // TODO: Draw player defense ship hull using ctx.fillRect
-  ctx.fillStyle = ship.color;
-  ctx.fillRect(ship.x, ship.y, ship.width, ship.height);
+  // TODO: Set fillStyle to ship.color and draw the hull with ctx.fillRect.
 
   console.log('[SPACE RADAR] Defense ship online at x: ' + ship.x + ', y: ' + ship.y);
 }
@@ -70,6 +68,8 @@ function render() {
 render();
 `,
       python: `# === STEP 1: PYTHON SPACE SHIP ENTITY ===
+import canvas
+ctx = canvas.get_context('2d')
 ship = {
     'x': 182,
     'y': 355,
@@ -78,6 +78,7 @@ ship = {
     'color': '#38bdf8'
 }
 
+# TODO: Set ctx.fill_style to ship['color'] and draw the hull with ctx.fill_rect.
 print(f"[RADAR] Space defense ship ready at ({ship['x']}, {ship['y']})")
 `,
       java: `// === STEP 1: JAVA GRAPHICS2D DEFENSE SHIP ===
@@ -97,9 +98,7 @@ public class SpaceDefender extends JPanel {
         g2d.setColor(new Color(3, 7, 18));
         g2d.fillRect(0, 0, 400, 400);
 
-        // Draw Player Ship
-        g2d.setColor(new Color(56, 189, 248));
-        g2d.fillRect(shipX, shipY, shipWidth, shipHeight);
+        // TODO: Set the ship color and draw its hull with g2d.fillRect.
     }
 }
 `,
@@ -132,13 +131,17 @@ function render() {
 
 render();
 `,
-      python: `ship = {
+      python: `import canvas
+ctx = canvas.get_context('2d')
+ship = {
     'x': 182,
     'y': 355,
     'width': 36,
     'height': 22,
     'color': '#38bdf8'
 }
+ctx.fill_style = ship['color']
+ctx.fill_rect(ship['x'], ship['y'], ship['width'], ship['height'])
 print(f"[RADAR] Space defense ship ready at ({ship['x']}, {ship['y']})")
 `,
       java: `import java.awt.*;
@@ -163,7 +166,7 @@ public class SpaceDefender extends JPanel {
 `,
     },
     hints: [
-      'Use ctx.fillRect(ship.x, ship.y, ship.width, ship.height) to draw the ship sprite.',
+      'Set the drawing color from the ship, then draw a rectangle at its x and y position using its width and height.',
       'Make sure to clear the canvas using ctx.fillStyle = "#030712" before drawing.',
     ],
     tests: [
@@ -183,7 +186,7 @@ public class SpaceDefender extends JPanel {
         description: 'Ensure ship entity contains x, y coordinates and dimensions.',
         hint: 'Define ship with x, y, width, and height.',
         check: (code) => {
-          const passed = (code.includes('ship') || code.includes('shipX')) && (code.includes('fillRect') || code.includes('fill_rect'));
+          const passed = /fillRect\s*\(\s*(?:ship\.x|shipX)/.test(code) || /fill_rect\s*\(\s*ship\[['"]x/.test(code);
           return { passed, message: passed ? 'Ship entity rendered.' : 'Ship definition or render call missing.' };
         },
       },
@@ -215,29 +218,32 @@ const ship = { x: 182, y: 355, width: 36, height: 22, vx: 0, speed: 5 };
 const lasers = [];
 
 window.addEventListener('keydown', (e) => {
-  if (e.key === 'ArrowLeft' || e.key === 'a') ship.vx = -ship.speed;
-  if (e.key === 'ArrowRight' || e.key === 'd') ship.vx = ship.speed;
+  // TODO 1: Set ship.vx to -ship.speed for left and +ship.speed for right.
   if (e.key === ' ' || e.key === 'ArrowUp') {
-    // Fire plasma bolt
-    lasers.push({ x: ship.x + ship.width / 2 - 2, y: ship.y, width: 4, height: 12, vy: -8 });
-    console.log('[WEAPON] Plasma laser fired! Active bolts: ' + lasers.length);
+    // TODO 2: Push a laser at the center of the ship with vy: -8.
   }
 });
 
 window.addEventListener('keyup', (e) => {
   if (['ArrowLeft', 'ArrowRight', 'a', 'd'].includes(e.key)) ship.vx = 0;
 });
+
+function update() {
+  ship.x = Math.max(0, Math.min(canvas.width - ship.width, ship.x + ship.vx));
+  // TODO 3: Move each laser upward by adding its vy to its y position.
+}
 `,
       python: `# === STEP 2: PYTHON WEAPON FIRING ===
 lasers = []
 
 def fire_laser(ship_x, ship_y):
-    lasers.append({'x': ship_x + 16, 'y': ship_y, 'vy': -8})
+    # TODO: Append a laser centered on the ship with upward velocity -8.
     print(f"[LASER] Bolt launched! Total active: {len(lasers)}")
 
 fire_laser(182, 355)
 `,
       java: `// === STEP 2: JAVA KEYBOARD & PROJECTILES ===
+import java.awt.Point;
 import java.awt.event.*;
 import java.util.ArrayList;
 
@@ -247,8 +253,7 @@ public class ShipController extends KeyAdapter {
 
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-            lasers.add(new Point(shipX + 16, 355));
-            System.out.println("[WEAPON] Laser fired!");
+            // TODO: Add a Point at the ship's center to the lasers list.
         }
     }
 }
@@ -267,21 +272,41 @@ window.addEventListener('keydown', (e) => {
     lasers.push({ x: ship.x + ship.width / 2 - 2, y: ship.y, width: 4, height: 12, vy: -8 });
   }
 });
+window.addEventListener('keyup', (e) => {
+  if (['ArrowLeft', 'ArrowRight', 'a', 'd'].includes(e.key)) ship.vx = 0;
+});
+
+function update() {
+  ship.x = Math.max(0, Math.min(canvas.width - ship.width, ship.x + ship.vx));
+  lasers.forEach((laser) => { laser.y += laser.vy; });
+}
 `,
       python: `lasers = []
 def fire_laser(ship_x, ship_y):
     lasers.append({'x': ship_x + 16, 'y': ship_y, 'vy': -8})
 `,
-      java: `public class WeaponSystem {
-    public void fire(int x, int y) {
-        System.out.println("Firing laser from " + x);
+      java: `import java.awt.Point;
+import java.awt.event.*;
+import java.util.ArrayList;
+
+public class ShipController extends KeyAdapter {
+    ArrayList<Point> lasers = new ArrayList<>();
+    int shipX = 182;
+
+    public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+            lasers.add(new Point(shipX + 16, 355));
+            System.out.println("[WEAPON] Laser fired!");
+        }
     }
 }
 `,
     },
     hints: [
-      'Listen for keydown events to set ship.vx and spawn laser objects into the lasers array.',
-      'Remember to advance laser positions on each frame by laser.y += laser.vy.',
+      'In JavaScript, set vx to a negative speed for left and a positive speed for right. Add a laser object to the lasers array when firing.',
+      'In JavaScript, move each laser every frame with laser.y += laser.vy.',
+      'In Python, append a dictionary with x, y, and vy keys to the lasers list.',
+      'In Java, use lasers.add(new Point(shipX + 16, 355)) inside the Space key branch.',
     ],
     tests: [
       {
@@ -300,7 +325,7 @@ def fire_laser(ship_x, ship_y):
         description: 'Ensure lasers projectile collection is managed.',
         hint: 'Declare const lasers = [] or ArrayList<Point> lasers.',
         check: (code) => {
-          const passed = code.includes('lasers') || code.includes('laser');
+          const passed = /lasers\.(?:push|append|add)\s*\(/.test(code);
           return { passed, message: passed ? 'Laser projectile system verified.' : 'Lasers array missing.' };
         },
       },
@@ -326,26 +351,15 @@ def fire_laser(ship_x, ship_y):
     codeBoilerplate: {
       javascript: `// === STEP 3: ALIEN FLEET & AABB COLLISIONS ===
 function checkLaserCollision(laser, alien) {
-  return (
-    alien.alive &&
-    laser.x < alien.x + alien.width &&
-    laser.x + laser.width > alien.x &&
-    laser.y < alien.y + alien.height &&
-    laser.y + laser.height > alien.y
-  );
+  // TODO 1: Return true when an alive alien overlaps a laser on both axes.
+  return false;
 }
 
 // Fleet grid setup
 const aliens = [];
 for (let r = 0; r < 3; r++) {
   for (let c = 0; c < 6; c++) {
-    aliens.push({
-      x: 45 + c * 52,
-      y: 40 + r * 35,
-      width: 28,
-      height: 20,
-      alive: true
-    });
+    // TODO 2: Push an alive alien at x: 45 + c * 52, y: 40 + r * 35.
   }
 }
 
@@ -353,17 +367,13 @@ console.log('[FLEET] Initialized invasion grid with ' + aliens.length + ' invade
 `,
       python: `# === STEP 3: PYTHON AABB CHECK ===
 def check_collision(laser, alien):
-    return (
-        alien['alive'] and
-        laser['x'] < alien['x'] + alien['width'] and
-        laser['x'] + laser['width'] > alien['x'] and
-        laser['y'] < alien['y'] + alien['height'] and
-        laser['y'] + laser['height'] > alien['y']
-    )
+    # TODO: Return true only when the alive alien overlaps the laser on both axes.
+    return False
 `,
       java: `// === STEP 3: JAVA AABB COLLISION ===
 public boolean checkCollision(Rectangle laser, Rectangle alien) {
-    return laser.intersects(alien);
+    // TODO: Use Rectangle.intersects to test whether the laser hits the alien.
+    return false;
 }
 `,
     },
@@ -376,6 +386,13 @@ public boolean checkCollision(Rectangle laser, Rectangle alien) {
     laser.y < alien.y + alien.height &&
     laser.y + laser.height > alien.y
   );
+}
+
+const aliens = [];
+for (let r = 0; r < 3; r++) {
+  for (let c = 0; c < 6; c++) {
+    aliens.push({ x: 45 + c * 52, y: 40 + r * 35, width: 28, height: 20, alive: true });
+  }
 }
 `,
       python: `def check_collision(laser, alien):
@@ -393,8 +410,10 @@ public boolean checkCollision(Rectangle laser, Rectangle alien) {
 `,
     },
     hints: [
-      'AABB collision tests 4 directional overlap conditions simultaneously.',
-      'When an alien is hit, set alien.alive = false and award +150 points!',
+      'AABB collision checks whether two rectangles overlap horizontally and vertically.',
+      'In JavaScript, create 18 aliens by pushing one object for each row and column. Give each alien width, height, and alive fields.',
+      'In Python, compare the x and y edges of the laser and alien dictionaries after checking alien["alive"].',
+      'In Java, Rectangle.intersects already performs the four edge comparisons.',
     ],
     tests: [
       {
@@ -403,7 +422,7 @@ public boolean checkCollision(Rectangle laser, Rectangle alien) {
         description: 'Verify Axis-Aligned Bounding Box collision math is implemented.',
         hint: 'Implement checkLaserCollision or bounds intersection.',
         check: (code) => {
-          const passed = code.includes('width') && code.includes('height') && (code.includes('&&') || code.includes('and') || code.includes('intersects'));
+          const passed = (code.includes('width') && code.includes('height') && (code.includes('&&') || code.includes('and'))) || code.includes('.intersects(');
           return { passed, message: passed ? 'AABB projectile collision math verified.' : 'Collision check formula missing.' };
         },
       },
@@ -433,13 +452,15 @@ const ctx = canvas.getContext('2d');
 
 let score = 0;
 let gameOver = false;
+const bunkers = [{ x: 90, y: 320, width: 60, height: 16, hp: 4 }];
 
 function gameLoop() {
   if (gameOver) return;
 
-  // 1. Update Physics
-  // 2. Test AABB Collisions
-  // 3. Render Starfield & Entities
+  // TODO 1: Move the aliens and lasers each frame.
+  // TODO 2: On a laser hit, remove the alien and add 150 to score.
+  // TODO 3: Reduce a bunker's hp when a projectile hits it.
+  // TODO 4: Clear the canvas and draw the ship, aliens, bunkers, and lasers.
 
   // Draw HUD Score
   ctx.fillStyle = '#38bdf8';
@@ -454,9 +475,10 @@ console.log('[ENGINE] Cyber Invaders 60 FPS Game Loop Active!');
 `,
       python: `# === STEP 4: PYTHON GAME LOOP ===
 score = 0
+bunkers = [{'hp': 4}]
 def update_game():
     global score
-    score += 100
+    # TODO: Award 150 points for an alien hit and reduce bunker hp on a bunker hit.
     print(f"Game Loop Running | Score: {score}")
 
 update_game()
@@ -466,29 +488,118 @@ import javax.swing.Timer;
 
 public class SpaceGameLoop {
     int score = 0;
-    Timer timer = new Timer(16, e -> {
-        score += 100;
-    });
+    int bunkerHp = 4;
+    // TODO: Create a 16 ms Timer that updates the game and awards 150 points on a hit.
 }
 `,
     },
     solution: {
-      javascript: `let score = 0;
+      javascript: `const canvas = document.getElementById('game-canvas');
+const ctx = canvas.getContext('2d');
+const ship = { x: 182, y: 355, width: 36, height: 22 };
+const aliens = Array.from({ length: 6 }, (_, column) => ({
+  x: 45 + column * 52, y: 40, width: 28, height: 20, alive: true
+}));
+const lasers = [];
+const bunkers = [{ x: 90, y: 320, width: 60, height: 16, hp: 4 }];
+let score = 0;
+let gameOver = false;
+
+window.addEventListener('keydown', (event) => {
+  if (event.key === 'ArrowLeft') ship.x = Math.max(0, ship.x - 12);
+  if (event.key === 'ArrowRight') ship.x = Math.min(canvas.width - ship.width, ship.x + 12);
+  if (event.key === ' ') lasers.push({ x: ship.x + 16, y: ship.y, width: 4, height: 12, vy: -8, active: true });
+});
+
+function overlaps(a, b) {
+  return a.x < b.x + b.width && a.x + a.width > b.x &&
+    a.y < b.y + b.height && a.y + a.height > b.y;
+}
+
 function gameLoop() {
+  if (gameOver) return;
+  ctx.fillStyle = '#030712';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  for (const alien of aliens) {
+    if (!alien.alive) continue;
+    alien.y += 0.04;
+    if (alien.y + alien.height >= ship.y) gameOver = true;
+    ctx.fillStyle = '#fb7185';
+    ctx.fillRect(alien.x, alien.y, alien.width, alien.height);
+  }
+
+  for (const laser of lasers) {
+    if (!laser.active) continue;
+    laser.y += laser.vy;
+    if (laser.y < 0) laser.active = false;
+    for (const bunker of bunkers) {
+      if (bunker.hp > 0 && overlaps(laser, bunker)) {
+        bunker.hp -= 1;
+        laser.active = false;
+      }
+    }
+    for (const alien of aliens) {
+      if (laser.active && alien.alive && overlaps(laser, alien)) {
+        alien.alive = false;
+        laser.active = false;
+        score += 150;
+      }
+    }
+    if (laser.active) {
+      ctx.fillStyle = '#facc15';
+      ctx.fillRect(laser.x, laser.y, laser.width, laser.height);
+    }
+  }
+
+  for (const bunker of bunkers) {
+    if (bunker.hp > 0) {
+      ctx.fillStyle = '#38bdf8';
+      ctx.fillRect(bunker.x, bunker.y, bunker.width, bunker.height);
+    }
+  }
+  ctx.fillStyle = '#38bdf8';
+  ctx.fillRect(ship.x, ship.y, ship.width, ship.height);
+  ctx.font = 'bold 15px monospace';
+  ctx.fillText('SCORE: ' + score, 16, 44);
   requestAnimationFrame(gameLoop);
 }
 gameLoop();
 `,
       python: `score = 0
+bunkers = [{'hp': 4}]
 def update_game():
-    pass
+    global score
+    alien_hit = True
+    bunker_hit = True
+    if alien_hit:
+        score += 150
+    if bunker_hit and bunkers[0]['hp'] > 0:
+        bunkers[0]['hp'] -= 1
+    print(f"Game Loop Running | Score: {score}")
+
+update_game()
 `,
-      java: `public class SpaceGameLoop {}
+      java: `import javax.swing.Timer;
+
+public class SpaceGameLoop {
+    int score = 0;
+    int bunkerHp = 4;
+    Timer timer = new Timer(16, event -> {
+        boolean alienHit = true;
+        boolean bunkerHit = true;
+        if (alienHit) score += 150;
+        if (bunkerHit && bunkerHp > 0) bunkerHp--;
+        System.out.println("SCORE: " + score);
+    });
+}
 `,
     },
     hints: [
-      'Call requestAnimationFrame(gameLoop) at the end of each frame to maintain 60 FPS.',
-      'Increment score by 150 points whenever an alien invader is hit.',
+      'In JavaScript, call requestAnimationFrame(gameLoop) after updating and drawing each frame. Move a laser with laser.y += laser.vy.',
+      'In JavaScript, test overlapping rectangles; mark a hit alien inactive and add 150 to score. Decrease bunker hp on a bunker hit.',
+      'In Python, update score inside update_game and reduce bunker hp only while it is above zero.',
+      'In Java, a Timer(16, ...) runs an update about every 16 ms; change score and bunkerHp inside its callback.',
     ],
     tests: [
       {
@@ -497,7 +608,7 @@ def update_game():
         description: 'Ensure requestAnimationFrame or Timer runs the continuous simulation.',
         hint: 'Use requestAnimationFrame(gameLoop) or Timer.',
         check: (code) => {
-          const passed = code.includes('requestAnimationFrame') || code.includes('Timer') || code.includes('gameLoop');
+          const passed = code.includes('requestAnimationFrame(gameLoop)') || code.includes('new Timer(') || code.includes('update_game()');
           return { passed, message: passed ? 'Continuous 60 FPS game loop operational.' : 'requestAnimationFrame call missing.' };
         },
       },
@@ -507,8 +618,18 @@ def update_game():
         description: 'Verify score tracking is updated on game events.',
         hint: 'Declare score variable and render score readout.',
         check: (code) => {
-          const passed = code.includes('score') || code.includes('SCORE');
+          const passed = /score\s*\+=\s*150/.test(code);
           return { passed, message: passed ? 'Score tracking verified.' : 'Score counter variable missing.' };
+        },
+      },
+      {
+        id: 'test-bunker-damage',
+        name: 'Bunker Damage',
+        description: 'Verify a projectile can reduce a bunker’s hit points.',
+        hint: 'Decrease the bunker hp when it is hit.',
+        check: (code) => {
+          const passed = /(?:bunker\.hp|bunkers\[0\]\[['"]hp['"]\])\s*-=\s*1|bunkerHp--/.test(code);
+          return { passed, message: passed ? 'Bunker damage is implemented.' : 'Bunker hit points never decrease.' };
         },
       },
     ],

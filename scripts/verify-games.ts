@@ -6,6 +6,23 @@ import { setActiveGame, updateCode, workspaceStore } from '../src/store/workspac
 import { createStandaloneGameHtml } from '../src/services/gameExport';
 
 for (const game of [neonDungeonGame, cyberInvadersGame]) {
+  for (const lesson of game.lessons) {
+    for (const language of ['javascript', 'python', 'java'] as const) {
+      const starter = lesson.codeBoilerplate[language];
+      const example = lesson.solution[language];
+      if (!starter.includes('TODO')) continue;
+      assert.ok(example.trim(), `${game.id}/${lesson.id}/${language} needs a worked example`);
+      assert.doesNotMatch(example, /TODO/, `${game.id}/${lesson.id}/${language} example must complete the TODOs`);
+      assert.notEqual(example, starter, `${game.id}/${lesson.id}/${language} example must differ from starter code`);
+      if (language === 'javascript') {
+        assert.doesNotThrow(() => new Function(example), `${game.id}/${lesson.id} JavaScript example must parse`);
+      }
+      for (const test of lesson.tests) {
+        const result = test.check(example, []);
+        assert.ok(result.passed, `${game.id}/${lesson.id}/${language} example fails ${test.name}: ${result.message}`);
+      }
+    }
+  }
   const html = createStandaloneGameHtml(game);
   const script = html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
   assert.ok(script, `${game.id} export must include a game script`);
@@ -67,4 +84,4 @@ try {
   gameRegistry.unregister(thirdGame.id);
 }
 
-console.log('Game registry, duplicate lesson IDs, game removal, and isolated workspace state verified.');
+console.log('Game registry, lesson TODO examples, game removal, and isolated workspace state verified.');
