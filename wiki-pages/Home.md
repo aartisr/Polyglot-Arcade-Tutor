@@ -2,6 +2,8 @@
 
 PolyGlot Arcade Tutor is a browser-based learning project. Build retro games with JavaScript lessons and compare Python and Java examples.
 
+Created by [Aarti S Ravikumar](https://ai-aarti.com/) for Hack Club Haven, hosted by [PCSS II Robotics Club](https://pcssiirobotics.org/).
+
 - [Open the live tutor](https://pat.pcssiirobotics.org/)
 - [Read the GitHub Pages documentation](https://aartisr.github.io/Polyglot-Arcade-Tutor/)
 - [View the source repository](https://github.com/aartisr/Polyglot-Arcade-Tutor)

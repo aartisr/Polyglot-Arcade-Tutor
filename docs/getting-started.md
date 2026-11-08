@@ -20,4 +20,4 @@ The app is designed for desktop and mobile. On touch devices, use the on-screen 
 
 [Browse games and lessons](games.html) · [Read common questions](faq.html) · [Open the Wiki](https://github.com/aartisr/Polyglot-Arcade-Tutor/wiki/Getting-Started)
 
-<small>By <a href="https://ai-aarti.com/" rel="author">Aarti S Ravikumar</a></small>
+<small>By <a href="https://ai-aarti.com/" rel="author">Aarti S Ravikumar</a> · Hack Club Haven host: <a href="https://pcssiirobotics.org/">PCSS II Robotics Club</a></small>

@@ -2,7 +2,7 @@
 
 [Open the live tutor](https://pat.pcssiirobotics.org/) · [Browse the lesson guide](https://pat.pcssiirobotics.org/discover/) · [Read GitHub Pages docs](https://aartisr.github.io/Polyglot-Arcade-Tutor/) · [Visit the Wiki](https://github.com/aartisr/Polyglot-Arcade-Tutor/wiki)
 
-**Learn to build a game, one small step at a time.** PolyGlot Arcade Tutor is a browser based coding playground made for the **Hack Club Haven game jam hosted by PCSS II Robotics Club** on **November 14–15, 2026**. The jam welcomes teens, including people who have never coded before. This project is my way of making that invitation real: open a lesson, change a few lines, see what happens, and keep building with friends.
+**Learn to build a game, one small step at a time.** PolyGlot Arcade Tutor is a browser based coding playground made for the **Hack Club Haven game jam hosted by [PCSS II Robotics Club](https://pcssiirobotics.org/)** on **November 14–15, 2026**. The jam welcomes teens, including people who have never coded before. This project is my way of making that invitation real: open a lesson, change a few lines, see what happens, and keep building with friends.
 
 <details>
 <summary>A note from the author</summary>
@@ -99,7 +99,7 @@ bun run build
 
 The project is built with React, TypeScript, Vite, Monaco Editor, and Firebase. The app can also be installed as a progressive web app in supported browsers.
 
-**Made for Hack Club Haven, hosted by PCSS II Robotics Club.** See you at the arcade.
+**Made for Hack Club Haven, hosted by [PCSS II Robotics Club](https://pcssiirobotics.org/).** See you at the arcade.
 
 ## Cite this project
 

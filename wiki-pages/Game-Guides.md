@@ -12,4 +12,4 @@ Each game has four lessons. The [Pages lesson index](https://aartisr.github.io/P
 
 [Getting Started](Getting-Started) · [Wiki Home](Home)
 
-<small>By <a href="https://ai-aarti.com/" rel="author">Aarti S Ravikumar</a></small>
+<small>By <a href="https://ai-aarti.com/" rel="author">Aarti S Ravikumar</a> · Hack Club Haven host: <a href="https://pcssiirobotics.org/">PCSS II Robotics Club</a></small>

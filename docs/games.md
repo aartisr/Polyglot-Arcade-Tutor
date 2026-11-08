@@ -27,4 +27,4 @@ Every lesson has `TODO` tasks, progressive hints, a worked example, and checks. 
 
 [Getting started](getting-started.html) · [Wiki game guide](https://github.com/aartisr/Polyglot-Arcade-Tutor/wiki/Game-Guides) · [Live tutor](https://pat.pcssiirobotics.org/)
 
-<small>By <a href="https://ai-aarti.com/" rel="author">Aarti S Ravikumar</a></small>
+<small>By <a href="https://ai-aarti.com/" rel="author">Aarti S Ravikumar</a> · Hack Club Haven host: <a href="https://pcssiirobotics.org/">PCSS II Robotics Club</a></small>

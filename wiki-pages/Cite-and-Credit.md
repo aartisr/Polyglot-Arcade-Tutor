@@ -2,6 +2,8 @@
 
 **Creator:** [Aarti S Ravikumar](https://ai-aarti.com/)
 
+**Event host:** [PCSS II Robotics Club](https://pcssiirobotics.org/) hosts Hack Club Haven, the game jam for which this project was made. Aarti S Ravikumar is the software author.
+
 Suggested software citation:
 
 > Ravikumar, A. S. (2026). *PolyGlot Arcade Tutor* [Computer software]. https://github.com/aartisr/Polyglot-Arcade-Tutor

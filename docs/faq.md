@@ -1,6 +1,6 @@
 ---
 title: Frequently Asked Questions
-description: Clear answers about PolyGlot Arcade Tutor by Aarti S Ravikumar.
+description: Answers about PolyGlot Arcade Tutor by Aarti S Ravikumar for Hack Club Haven, hosted by PCSS II Robotics Club.
 ---
 
 # Frequently asked questions
@@ -8,6 +8,8 @@ description: Clear answers about PolyGlot Arcade Tutor by Aarti S Ravikumar.
 ## Who created PolyGlot Arcade Tutor?
 
 [Aarti S Ravikumar](https://ai-aarti.com/) created the project. See the [citation page](citation.html) for the preferred credit.
+
+The project was made for Hack Club Haven, hosted by [PCSS II Robotics Club](https://pcssiirobotics.org/).
 
 ## What if I do not know how to fill a `TODO`?
 

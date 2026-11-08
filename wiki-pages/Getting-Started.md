@@ -10,4 +10,4 @@
 
 [Detailed Pages guide](https://aartisr.github.io/Polyglot-Arcade-Tutor/getting-started.html) · [Games](Game-Guides) · [Wiki Home](Home)
 
-<small>By <a href="https://ai-aarti.com/" rel="author">Aarti S Ravikumar</a></small>
+<small>By <a href="https://ai-aarti.com/" rel="author">Aarti S Ravikumar</a> · Hack Club Haven host: <a href="https://pcssiirobotics.org/">PCSS II Robotics Club</a></small>

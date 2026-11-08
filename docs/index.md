@@ -1,6 +1,6 @@
 ---
 title: PolyGlot Arcade Tutor Documentation
-description: Learn how to use, extend, and cite PolyGlot Arcade Tutor by Aarti S Ravikumar.
+description: Learn how to use and cite PolyGlot Arcade Tutor by Aarti S Ravikumar for Hack Club Haven, hosted by PCSS II Robotics Club.
 ---
 
 # PolyGlot Arcade Tutor
@@ -10,6 +10,8 @@ description: Learn how to use, extend, and cite PolyGlot Arcade Tutor by Aarti S
 [Open the live tutor](https://pat.pcssiirobotics.org/) · [Explore all lessons](https://pat.pcssiirobotics.org/discover/) · [Source repository](https://github.com/aartisr/Polyglot-Arcade-Tutor)
 
 The tutor has two game paths. Each path has four lessons, an editor, hints, worked examples, checks, a playable reference game, and a standalone HTML download. JavaScript runs in the browser. Python and Java are comparison views with simulated previews.
+
+Created by [Aarti S Ravikumar](https://ai-aarti.com/) for Hack Club Haven, hosted by [PCSS II Robotics Club](https://pcssiirobotics.org/).
 
 ## Find what you need
 
