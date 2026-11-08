@@ -1,5 +1,7 @@
 # PolyGlot Arcade Tutor 🎮
 
+**Created by [Aarti S Ravikumar](https://ai-aarti.com/).** [Open the live tutor](https://pat.pcssiirobotics.org/) · [Browse the lesson guide](https://pat.pcssiirobotics.org/discover/)
+
 **Learn to build a game, one small step at a time.** PolyGlot Arcade Tutor is a browser based coding playground made for the **Hack Club Haven game jam hosted by PCSS II Robotics Club** on **November 14–15, 2026**. The jam welcomes teens, including people who have never coded before. This project is my way of making that invitation real: open a lesson, change a few lines, see what happens, and keep building with friends.
 
 ## A note from the author
@@ -10,7 +12,7 @@ That is why I made PolyGlot Arcade Tutor. It turns game programming ideas into s
 
 If you use this at the jam, please share what you changed, explain one idea to another participant, and make space for a beginner on your team. The best outcome is more young people feeling that they belong in a creative coding community.
 
-— **Aarti**
+— **[Aarti S Ravikumar](https://ai-aarti.com/)**
 
 ## What is in this repo?
 
@@ -76,6 +78,8 @@ The checked in `firebase-applet-config.json` points to a specific Firebase proje
 
 Import this repository into Vercel with the project root as the Root Directory. `vercel.json` selects the Vite build, installs from the committed Bun lockfile, publishes `dist`, and rewrites lesson URLs to the app entry point. No server process or build environment variables are needed for the core lessons. Set up your own Firebase project and authorize the deployed domain in Firebase Authentication if you want sign-in and shared features. The committed lockfile uses the public npm registry; `.npmrc` is ignored so each developer can set local registry preferences.
 
+The production build generates `robots.txt`, `sitemap.xml`, `llms.txt`, and crawlable lesson guide pages from the game registry. Its canonical URL defaults to `https://pat.pcssiirobotics.org/`; set `PUBLIC_SITE_URL` during the build if you deploy your own copy on another domain. Submit that deployment's sitemap to your search engine webmaster tools after it is public.
+
 To check a code change before sharing it:
 
 ```bash
@@ -86,6 +90,10 @@ bun run build
 The project is built with React, TypeScript, Vite, Monaco Editor, and Firebase. The app can also be installed as a progressive web app in supported browsers.
 
 **Made for Hack Club Haven, hosted by PCSS II Robotics Club.** See you at the arcade.
+
+## Cite this project
+
+**Ravikumar, A. S.** (2026). *PolyGlot Arcade Tutor* [Computer software]. [https://github.com/aartisr/Polyglot-Arcade-Tutor](https://github.com/aartisr/Polyglot-Arcade-Tutor). The machine-readable [CITATION.cff](CITATION.cff) provides the same author, live app, and source links for citation tools.
 
 ## Add or remove a game
 

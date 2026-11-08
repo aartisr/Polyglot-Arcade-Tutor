@@ -2,6 +2,7 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import { discoveryPlugin } from './scripts/discovery';
 
 export default defineConfig(() => {
   return {
@@ -31,6 +32,7 @@ self.addEventListener('activate', (event) => {
       },
       react(), 
       tailwindcss(),
+      discoveryPlugin(),
       VitePWA({
         injectRegister: null,
         registerType: 'autoUpdate',

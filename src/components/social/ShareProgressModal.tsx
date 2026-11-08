@@ -54,7 +54,7 @@ export const ShareProgressModal: React.FC<ShareProgressModalProps> = ({ isOpen, 
   const unlockedBadges = BADGE_CATALOG.filter((b) => unlockedBadgesMap[b.id]);
   const completedCount = Object.keys(completedSteps).filter((k) => completedSteps[k]).length;
 
-  const shareUrl = typeof window !== 'undefined' ? window.location.origin : 'https://polyglot-arcade.vercel.app';
+  const shareUrl = typeof window !== 'undefined' ? window.location.origin : 'https://pat.pcssiirobotics.org';
   const tutorialUrl = `${shareUrl}/tutor/${activeGame.lessons[0].id}`;
 
   const badgesListText = unlockedBadges.length > 0

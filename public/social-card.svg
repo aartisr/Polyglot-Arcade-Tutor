@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">PolyGlot Arcade Tutor</title>
+  <desc id="desc">Learn game development in JavaScript, Python, and Java. Created by Aarti S Ravikumar.</desc>
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1">
+      <stop stop-color="#061226"/>
+      <stop offset="1" stop-color="#090b1c"/>
+    </linearGradient>
+    <linearGradient id="accent" x2="1" y2="1">
+      <stop stop-color="#19d8ef"/>
+      <stop offset="1" stop-color="#9ef6cf"/>
+    </linearGradient>
+    <pattern id="grid" width="42" height="42" patternUnits="userSpaceOnUse">
+      <path d="M 42 0 L 0 0 0 42" fill="none" stroke="#294057" stroke-opacity=".22" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  <circle cx="1110" cy="40" r="330" fill="#0b8ca1" opacity=".13"/>
+  <circle cx="140" cy="615" r="290" fill="#7c3aed" opacity=".10"/>
+  <rect x="54" y="53" width="1092" height="524" rx="36" fill="#08172c" fill-opacity=".87" stroke="#2d5365" stroke-width="2"/>
+  <rect x="93" y="95" width="186" height="42" rx="21" fill="#103547" stroke="#24d8ed" stroke-opacity=".45"/>
+  <text x="186" y="123" text-anchor="middle" fill="#7ce8f2" font-family="Arial, sans-serif" font-size="17" font-weight="700" letter-spacing="2">LEARN + PLAY</text>
+  <text x="93" y="236" fill="#f3f8ff" font-family="Arial, sans-serif" font-size="67" font-weight="800">PolyGlot</text>
+  <text x="93" y="315" fill="url(#accent)" font-family="Arial, sans-serif" font-size="67" font-weight="800">Arcade Tutor</text>
+  <text x="96" y="377" fill="#b8cce0" font-family="Arial, sans-serif" font-size="27">Build retro games. Learn the code behind them.</text>
+  <g font-family="Arial, sans-serif" font-size="18" font-weight="700">
+    <rect x="94" y="414" width="145" height="42" rx="11" fill="#102f41" stroke="#258aa0"/>
+    <text x="166" y="442" text-anchor="middle" fill="#89eaf3">JavaScript</text>
+    <rect x="253" y="414" width="115" height="42" rx="11" fill="#102f41" stroke="#258aa0"/>
+    <text x="310" y="442" text-anchor="middle" fill="#89eaf3">Python</text>
+    <rect x="382" y="414" width="98" height="42" rx="11" fill="#102f41" stroke="#258aa0"/>
+    <text x="431" y="442" text-anchor="middle" fill="#89eaf3">Java</text>
+  </g>
+  <path d="M 813 214 Q 813 190 839 190 L 1033 190 Q 1059 190 1059 214 L 1081 353 Q 1087 389 1055 397 Q 1035 403 1019 383 L 984 343 L 888 343 L 853 383 Q 837 403 817 397 Q 785 389 791 353 Z" fill="#0b2b42" stroke="#1bd0e6" stroke-width="8"/>
+  <path d="M 845 264 h 73 M 881 227 v 73" stroke="#8ceaf0" stroke-width="14" stroke-linecap="round"/>
+  <circle cx="1001" cy="255" r="11" fill="#a7f3d0"/>
+  <circle cx="1030" cy="280" r="11" fill="#a7f3d0"/>
+  <path d="M 93 504 H 1107" stroke="#365163"/>
+  <text x="94" y="542" fill="#d5e3ef" font-family="Arial, sans-serif" font-size="20">Created by Aarti S Ravikumar</text>
+  <text x="1106" y="542" text-anchor="end" fill="#65dce8" font-family="Arial, sans-serif" font-size="19">pat.pcssiirobotics.org</text>
+</svg>

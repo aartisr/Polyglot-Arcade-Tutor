@@ -328,6 +328,14 @@ const IndexComponent: React.FC = () => {
           <summary className="cursor-pointer font-semibold text-sm text-slate-300">Leaderboard</summary>
           <div className="pt-4"><DeferredLeaderboard /></div>
         </details>
+
+        <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-800 py-5 text-xs text-slate-400">
+          <span>Created by <a className="text-cyan-300 hover:underline" rel="author" href="https://ai-aarti.com/">Aarti S Ravikumar</a></span>
+          <nav aria-label="Project information" className="flex flex-wrap gap-4">
+            <a className="hover:text-cyan-300" href="/discover/">Explore all lessons</a>
+            <a className="hover:text-cyan-300" href="https://github.com/aartisr/Polyglot-Arcade-Tutor">Source and citation</a>
+          </nav>
+        </footer>
       </div>
 
       {showShare && (

@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use PolyGlot Arcade Tutor, please cite the project and credit Aarti S Ravikumar."
+type: software
+title: "PolyGlot Arcade Tutor"
+abstract: "An interactive browser tutor for learning retro 2D game development with JavaScript lessons and Python and Java code examples."
+authors:
+  - given-names: "Aarti S"
+    family-names: "Ravikumar"
+    website: "https://ai-aarti.com/"
+url: "https://pat.pcssiirobotics.org/"
+repository-code: "https://github.com/aartisr/Polyglot-Arcade-Tutor"
+keywords:
+  - game development education
+  - JavaScript
+  - Python
+  - Java
+  - coding lessons
+  - retro games
