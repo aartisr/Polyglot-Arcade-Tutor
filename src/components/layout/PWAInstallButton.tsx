@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { usePWAInstall } from '../../hooks/usePWAInstall';
 import { Download, Smartphone } from 'lucide-react';
 
@@ -33,7 +34,7 @@ export const PWAInstallButton: React.FC = () => {
           Install on iOS
         </button>
 
-        {showIOSGuide && (
+        {showIOSGuide && createPortal(
           <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
             <div className="w-full max-w-sm rounded-xl bg-slate-900 border border-slate-800 p-6 shadow-2xl">
               <h3 className="text-sm font-bold text-slate-100">Install on iPhone / iPad</h3>
@@ -48,7 +49,8 @@ export const PWAInstallButton: React.FC = () => {
                 Close
               </button>
             </div>
-          </div>
+          </div>,
+          document.body
         )}
       </>
     );

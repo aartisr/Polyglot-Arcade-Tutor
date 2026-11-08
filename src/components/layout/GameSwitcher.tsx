@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useGameRegistry } from '../../services';
+import { useGameRegistry } from '../../services/useGameRegistry';
 import { arcadeAudio } from '../../utils/audio';
 import { Gamepad2, ChevronDown, Check, Sparkles, Layers } from 'lucide-react';
 
@@ -26,11 +26,9 @@ export const GameSwitcher: React.FC<GameSwitcherProps> = ({ onSelectGame, classN
 
   const handleGameChange = (gameId: string) => {
     arcadeAudio.playClick();
-    switchGame(gameId);
+    if (onSelectGame) onSelectGame(gameId);
+    else switchGame(gameId);
     setIsOpen(false);
-    if (onSelectGame) {
-      onSelectGame(gameId);
-    }
   };
 
   return (
@@ -40,11 +38,11 @@ export const GameSwitcher: React.FC<GameSwitcherProps> = ({ onSelectGame, classN
           arcadeAudio.playClick();
           setIsOpen((prev) => !prev);
         }}
-        className="flex items-center gap-2 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-700/80 rounded-xl transition-all shadow-sm group text-left"
+        className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-700/80 rounded-xl transition-all shadow-sm group text-left"
         title="Switch Active Game Engine"
       >
         <span className="text-base shrink-0">{activeGame.badge}</span>
-        <div className="flex flex-col min-w-0">
+        <div className="hidden sm:flex flex-col min-w-0">
           <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 group-hover:text-cyan-400 transition-colors flex items-center gap-1">
             <span>ARCADE ENGINE</span>
             <span className="text-[9px] px-1 rounded bg-slate-800 text-slate-300">
@@ -64,7 +62,7 @@ export const GameSwitcher: React.FC<GameSwitcherProps> = ({ onSelectGame, classN
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 w-72 bg-slate-950 border border-slate-800 rounded-xl shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150 p-1.5 space-y-1">
+        <div className="fixed inset-x-2 top-14 sm:absolute sm:inset-x-auto sm:top-full sm:left-0 mt-2 w-auto sm:w-72 bg-slate-950 border border-slate-800 rounded-xl shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150 p-1.5 space-y-1">
           <div className="px-3 py-1.5 text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest border-b border-slate-800/80 flex items-center justify-between">
             <span>SELECT GAME TUTOR</span>
             <Sparkles className="w-3 h-3 text-cyan-400" />

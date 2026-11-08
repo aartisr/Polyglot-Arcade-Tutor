@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { useWorkspaceStore } from '../../store/workspaceStore';
 import { getGameById } from '../../data/gamesRegistry';
-import { useGameRunner } from '../../services';
+import { useGameRunner } from '../../services/useGameRunner';
 import { VirtualGameController } from './VirtualGameController';
 import { Play, Square, Gamepad2, Info, Gauge, Smartphone } from 'lucide-react';
 
@@ -14,6 +14,7 @@ export const CanvasPreview: React.FC<CanvasPreviewProps> = ({ currentStepId }) =
   const [showTouchControls, setShowTouchControls] = useState<boolean>(true);
 
   const activeGameId = useWorkspaceStore((state) => state.activeGameId);
+  const activeLanguage = useWorkspaceStore((state) => state.activeLanguage);
   const difficulty = useWorkspaceStore((state) => state.difficulty);
   const crtModeEnabled = useWorkspaceStore((state) => state.crtModeEnabled);
 
@@ -45,7 +46,7 @@ export const CanvasPreview: React.FC<CanvasPreviewProps> = ({ currentStepId }) =
             {activeGame.title}
           </span>
           <span className="text-[10px] font-mono px-1.5 py-0.5 bg-slate-800 text-slate-400 rounded hidden xs:inline">
-            400x400
+            {activeGame.canvas?.width ?? 400}x{activeGame.canvas?.height ?? 400}
           </span>
           {isRunning && (
             <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-800/50 px-1.5 py-0.5 rounded flex items-center gap-1">
@@ -65,10 +66,10 @@ export const CanvasPreview: React.FC<CanvasPreviewProps> = ({ currentStepId }) =
                 ? 'bg-cyan-950/60 text-cyan-400 border border-cyan-800/60'
                 : 'bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800'
             }`}
-            title="Toggle On-Screen Virtual Touch Gamepad"
+            title="Toggle touch controls"
           >
             <Smartphone className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline text-[11px]">D-Pad</span>
+            <span className="hidden sm:inline text-[11px]">Controls</span>
           </button>
 
           <div className="hidden xs:flex items-center gap-1.5 px-2 py-1 bg-slate-900 border border-slate-800 rounded-lg text-xs font-mono">
@@ -95,12 +96,16 @@ export const CanvasPreview: React.FC<CanvasPreviewProps> = ({ currentStepId }) =
             ) : (
               <>
                 <Play className="w-3.5 h-3.5 fill-current" />
-                <span>Run Canvas</span>
+                <span>Run this step</span>
               </>
             )}
           </button>
         </div>
       </div>
+
+      <p className="px-3 py-1 text-[11px] text-slate-400">
+        {activeLanguage === 'javascript' ? 'This runs your current JavaScript. The finished game is in the final lesson.' : `${activeLanguage === 'python' ? 'Python' : 'Java'} shows a simulated game preview; this browser does not execute that language.`}
+      </p>
 
       {/* Canvas Viewport Container */}
       <div className="flex-1 flex flex-col items-center justify-start sm:justify-center p-3 bg-slate-950 relative overflow-y-auto space-y-3">
@@ -108,12 +113,13 @@ export const CanvasPreview: React.FC<CanvasPreviewProps> = ({ currentStepId }) =
           className={`relative rounded-xl overflow-hidden border-2 border-slate-800 bg-slate-950 shadow-2xl shadow-cyan-950/20 w-full max-w-[380px] aspect-square flex items-center justify-center ${
             crtModeEnabled ? 'crt-overlay' : ''
           }`}
+          style={{ aspectRatio: `${activeGame.canvas?.width ?? 400} / ${activeGame.canvas?.height ?? 400}` }}
         >
           <canvas
             id="game-canvas"
             ref={canvasRef}
-            width={400}
-            height={400}
+            width={activeGame.canvas?.width ?? 400}
+            height={activeGame.canvas?.height ?? 400}
             className="w-full h-full object-contain bg-slate-950 cursor-crosshair touch-none"
             tabIndex={0}
             title={activeGame.controlsTip}
@@ -133,7 +139,7 @@ export const CanvasPreview: React.FC<CanvasPreviewProps> = ({ currentStepId }) =
                 className="flex items-center gap-2 px-4 py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs rounded-xl transition-colors shadow-lg shadow-cyan-500/20 cursor-pointer"
               >
                 <Play className="w-4 h-4 fill-current" />
-                Start Game Engine
+                Run this step
               </button>
             </div>
           )}

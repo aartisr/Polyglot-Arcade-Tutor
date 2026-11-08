@@ -14,7 +14,7 @@ export const HighScoreModal: React.FC<HighScoreModalProps> = ({ isOpen, onClose,
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="relative w-full max-w-4xl max-h-[92vh] flex flex-col">
+      <div className="relative w-full max-w-4xl max-h-[92dvh] flex flex-col">
         {/* Modal Close Floating Button */}
         <button
           onClick={() => {
@@ -27,7 +27,7 @@ export const HighScoreModal: React.FC<HighScoreModalProps> = ({ isOpen, onClose,
           <X className="w-5 h-5" />
         </button>
 
-        <RealtimeLeaderboard currentScore={currentScore} showSubmitForm={true} className="max-h-[90vh] overflow-y-auto" />
+        <RealtimeLeaderboard currentScore={currentScore} showSubmitForm={true} className="max-h-[90dvh] overflow-y-auto" />
       </div>
     </div>
   );

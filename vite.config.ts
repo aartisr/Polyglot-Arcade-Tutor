@@ -1,15 +1,38 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
-import path from 'path';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig(() => {
   return {
     plugins: [
+      {
+        name: 'retire-development-service-worker',
+        apply: 'serve',
+        configureServer(server) {
+          server.middlewares.use((request, response, next) => {
+            const workerPath = request.url?.split('?')[0];
+            if (workerPath !== '/sw.js' && workerPath !== '/dev-sw.js') return next();
+            response.statusCode = 200;
+            response.setHeader('Content-Type', 'text/javascript; charset=utf-8');
+            response.setHeader('Cache-Control', 'no-store, max-age=0');
+            response.end(`
+self.addEventListener('install', () => self.skipWaiting());
+self.addEventListener('activate', (event) => {
+  event.waitUntil((async () => {
+    await self.registration.unregister();
+    const windows = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    await Promise.all(windows.map((client) => client.navigate(client.url).catch(() => {})));
+  })());
+});
+`);
+          });
+        },
+      },
       react(), 
       tailwindcss(),
       VitePWA({
+        injectRegister: null,
         registerType: 'autoUpdate',
         manifest: {
           id: '/',
@@ -37,8 +60,7 @@ export default defineConfig(() => {
           ],
         },
         devOptions: {
-          enabled: true,
-          type: 'module',
+          enabled: false,
         },
         workbox: {
           maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
@@ -47,7 +69,7 @@ export default defineConfig(() => {
     ],
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, '.'),
+        '@': import.meta.dirname,
       },
     },
     server: {

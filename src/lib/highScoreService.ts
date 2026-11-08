@@ -26,7 +26,8 @@ const COLLECTION_NAME = 'high_scores';
 // Subscribe to real-time top high scores
 export function subscribeTopHighScores(
   onUpdate: (scores: HighScoreRecord[]) => void,
-  filterLang?: Language | 'all'
+  filterLang?: Language | 'all',
+  onError?: (error: Error) => void
 ) {
   try {
     const scoresRef = collection(db, COLLECTION_NAME);
@@ -46,11 +47,13 @@ export function subscribeTopHighScores(
         onUpdate(scores);
       },
       (error) => {
-        handleFirestoreError(error, OperationType.LIST, COLLECTION_NAME);
+        console.warn('Leaderboard unavailable:', error);
+        onError?.(error);
       }
     );
   } catch (error) {
-    handleFirestoreError(error, OperationType.LIST, COLLECTION_NAME);
+    console.warn('Leaderboard unavailable:', error);
+    onError?.(error instanceof Error ? error : new Error(String(error)));
     return () => {};
   }
 }

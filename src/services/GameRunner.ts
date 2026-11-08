@@ -122,7 +122,11 @@ export class GameRunnerService implements IGameRunner {
   }
 
   public handleKeyDown(e: KeyboardEvent): boolean {
-    if (GAME_KEYS.has(e.key)) {
+    if (!this.running) return false;
+    const configuredGame = this.activeOptions?.game;
+    const game = typeof configuredGame === 'string' ? gameRegistry.get(configuredGame) : configuredGame;
+    const allowedKeys = game?.inputKeys ?? GAME_KEYS;
+    if (allowedKeys instanceof Set ? allowedKeys.has(e.key) : allowedKeys.includes(e.key)) {
       this.keysPressed[e.key] = true;
       if (this.running && e.key !== ' ' && e.key.toLowerCase() !== 'r') {
         arcadeAudio.playPlayerMove();
@@ -133,7 +137,7 @@ export class GameRunnerService implements IGameRunner {
   }
 
   public handleKeyUp(e: KeyboardEvent): void {
-    if (GAME_KEYS.has(e.key)) {
+    if (e.key in this.keysPressed) {
       this.keysPressed[e.key] = false;
     }
   }
@@ -276,7 +280,9 @@ export class GameRunnerService implements IGameRunner {
       let frameCount = 0;
 
       const safeRequestAnimationFrame = (callback: FrameRequestCallback) => {
+        if (!this.running) return 0;
         this.activeAnimationFrame = window.requestAnimationFrame((timestamp) => {
+          if (!this.running || this.activeCanvas !== canvas) return;
           frameCount++;
           if (timestamp - lastTime >= 1000) {
             this.currentFps = frameCount;

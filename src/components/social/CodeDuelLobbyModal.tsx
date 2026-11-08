@@ -27,6 +27,7 @@ interface CodeDuelDoc {
   creatorName: string;
   challengerName?: string;
   lessonId: string;
+  gameId?: string;
   status: 'waiting' | 'active' | 'completed';
   winner?: string;
   createdAt: any;
@@ -44,11 +45,12 @@ export const CodeDuelLobbyModal: React.FC<CodeDuelLobbyModalProps> = ({
   const [playerHandle, setPlayerHandle] = useState(
     () => localStorage.getItem('polyglot_arcade_handle') || 'CodeNinja'
   );
-  const [selectedLessonId, setSelectedLessonId] = useState('dungeon-step-1');
-  const [activeDuel, setActiveDuel] = useState<CodeDuelDoc | null>(null);
-
   const activeGameId = useWorkspaceStore((state) => state.activeGameId);
   const activeGame = getGameById(activeGameId);
+  const [selectedLessonId, setSelectedLessonId] = useState(() => activeGame.lessons[0].id);
+  const [activeDuel, setActiveDuel] = useState<CodeDuelDoc | null>(null);
+
+  useEffect(() => setSelectedLessonId(activeGame.lessons[0].id), [activeGameId]);
 
   useEffect(() => {
     localStorage.setItem('polyglot_arcade_handle', playerHandle);
@@ -70,7 +72,8 @@ export const CodeDuelLobbyModal: React.FC<CodeDuelLobbyModalProps> = ({
             id: docSnap.id,
             creatorName: data.creatorName || 'Anonymous',
             challengerName: data.challengerName,
-            lessonId: data.lessonId || 'step-1',
+            lessonId: data.lessonId || getGameById(data.gameId || activeGameId).lessons[0].id,
+            gameId: data.gameId || activeGameId,
             status: data.status || 'waiting',
             winner: data.winner,
             createdAt: data.createdAt,
@@ -88,7 +91,7 @@ export const CodeDuelLobbyModal: React.FC<CodeDuelLobbyModalProps> = ({
     );
 
     return () => unsubscribe();
-  }, [isOpen]);
+  }, [isOpen, activeGameId]);
 
   if (!isOpen) return null;
 
@@ -103,6 +106,7 @@ export const CodeDuelLobbyModal: React.FC<CodeDuelLobbyModalProps> = ({
       const newDuelData = {
         creatorName: playerHandle.trim(),
         lessonId: selectedLessonId,
+        gameId: activeGameId,
         status: 'waiting',
         createdAt: serverTimestamp(),
       };
@@ -166,7 +170,7 @@ export const CodeDuelLobbyModal: React.FC<CodeDuelLobbyModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="w-full max-w-3xl bg-slate-900 border border-cyan-500/40 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="w-full max-w-3xl bg-slate-900 border border-cyan-500/40 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90dvh]">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 bg-slate-950 border-b border-slate-800">
           <div className="flex items-center gap-3">
@@ -270,7 +274,7 @@ export const CodeDuelLobbyModal: React.FC<CodeDuelLobbyModalProps> = ({
                   {onSelectDuelLesson && (
                     <button
                       onClick={() => {
-                        onSelectDuelLesson(activeDuel.lessonId, activeGameId);
+                        onSelectDuelLesson(activeDuel.lessonId, activeDuel.gameId || activeGameId);
                         onClose();
                       }}
                       className="px-3 py-1.5 bg-cyan-500 text-slate-950 font-bold rounded-lg hover:bg-cyan-400 transition-colors"

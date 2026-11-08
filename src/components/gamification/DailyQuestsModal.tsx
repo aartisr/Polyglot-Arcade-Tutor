@@ -1,6 +1,8 @@
 import React from 'react';
 import { useWorkspaceStore, completeQuest } from '../../store/workspaceStore';
 import { arcadeAudio } from '../../utils/audio';
+import { getAllGames } from '../../data/gamesRegistry';
+import { WorkspaceState } from '../../types/lesson';
 import { Target, CheckCircle2, Award, Zap, X, Sparkles } from 'lucide-react';
 
 interface DailyQuestsModalProps {
@@ -14,7 +16,7 @@ export interface QuestItem {
   description: string;
   xpReward: number;
   icon: string;
-  checkCondition: (state: any) => boolean;
+  checkCondition: (state: WorkspaceState) => boolean;
 }
 
 export const DAILY_QUESTS: QuestItem[] = [
@@ -32,7 +34,7 @@ export const DAILY_QUESTS: QuestItem[] = [
     description: 'Pass all test cases on any step lesson.',
     xpReward: 200,
     icon: '⚡',
-    checkCondition: (state) => Object.keys(state.completedSteps).length >= 1,
+    checkCondition: (state) => Object.values(state.completedStepsByGame ?? {}).some((steps) => Object.values(steps).some(Boolean)) || Object.values(state.completedSteps).some(Boolean),
   },
   {
     id: 'cyber_madness',
@@ -52,11 +54,11 @@ export const DAILY_QUESTS: QuestItem[] = [
   },
   {
     id: 'arcade_master',
-    title: 'Rogue Crawler Champion',
-    description: 'Complete all 4 game engine curriculum steps.',
+    title: 'Game Path Champion',
+    description: 'Complete every lesson in any game.',
     xpReward: 400,
     icon: '👑',
-    checkCondition: (state) => Object.keys(state.completedSteps).length >= 4,
+    checkCondition: (state) => getAllGames().some((game) => game.lessons.every((lesson) => Boolean(state.completedStepsByGame?.[game.id]?.[lesson.id]))),
   },
 ];
 
@@ -75,7 +77,7 @@ export const DailyQuestsModal: React.FC<DailyQuestsModalProps> = ({ isOpen, onCl
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+      <div className="relative w-full max-w-xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85dvh]">
         {/* Modal Header */}
         <div className="p-4 bg-slate-950 border-b border-slate-800 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">

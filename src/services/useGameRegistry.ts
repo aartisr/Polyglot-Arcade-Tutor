@@ -25,6 +25,10 @@ export function useGameRegistry(): UseGameRegistryReturn {
   const activeGameId = useWorkspaceStore((state) => state.activeGameId);
 
   useEffect(() => {
+    if (!gameRegistry.has(activeGameId)) setActiveGame(gameRegistry.getDefaultGameId());
+  }, [activeGameId, games]);
+
+  useEffect(() => {
     // Subscribe to runtime registry modifications
     const unsubscribe = gameRegistry.subscribe((updatedGames) => {
       setGames(updatedGames);

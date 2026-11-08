@@ -1,9 +1,6 @@
-import { GameDefinition, GameEngineStrategy } from '../types/game';
-import { LessonStep, DifficultyLevel } from '../types/lesson';
-import { LESSONS } from '../data/lessonsData';
-import { CYBER_INVADERS_LESSONS } from '../data/cyberInvadersLessonsData';
-import { neonDungeonEngine, neonDungeonDifficultyConfig } from '../engines/neonDungeonEngine';
-import { cyberInvadersEngine, cyberInvadersDifficultyConfig } from '../engines/cyberInvadersEngine';
+import { GameDefinition } from '../types/game';
+import { LessonStep } from '../types/lesson';
+import { builtInGames } from '../games';
 
 /**
  * Generic Validation Result for Game Configurations
@@ -28,10 +25,7 @@ export interface IGameRegistry<T extends GameDefinition = GameDefinition> {
    */
   register(game: T, options?: { override?: boolean }): void;
 
-  /**
-   * Unregister an existing game definition by its ID.
-   * Default game cannot be unregistered.
-   */
+  /** Unregister a game. The last remaining game cannot be removed. */
   unregister(gameId: string): boolean;
 
   /**
@@ -64,14 +58,7 @@ export interface IGameRegistry<T extends GameDefinition = GameDefinition> {
    */
   setDefaultGameId(gameId: string): void;
 
-  /**
-   * Search across all games to find which game contains a given lesson ID.
-   */
-  findGameByLessonId(lessonId: string): T | undefined;
-
-  /**
-   * Retrieve a lesson step for a specific game, with resilient cross-game resolution.
-   */
+  /** Retrieve a lesson from exactly one game. Lesson IDs may repeat across games. */
   getLesson(gameId: string, lessonId: string): LessonStep;
 
   /**
@@ -92,69 +79,17 @@ export interface IGameRegistry<T extends GameDefinition = GameDefinition> {
 }
 
 /**
- * Default Game Configurations
- */
-const DEFAULT_NEON_DUNGEON: GameDefinition = {
-  id: 'neon-dungeon',
-  title: 'Neon Dungeon: Rogue Crawler',
-  subtitle: 'Top-Down 2D Dungeon Crawler Engine',
-  genre: 'Retro 2D Dungeon Crawler',
-  tagline: 'Code player velocity physics, AABB wall boundaries, energy gems & patrolling skulls',
-  description:
-    'Learn how to engineer a retro 2D top-down dungeon crawler game from scratch! Master coordinate spaces, velocity vectors, AABB bounding box collision math, and 60 FPS animation loops across JavaScript, Python, and Java.',
-  story:
-    'You are a neon cyber-knight trapped in a high-voltage labyrinth grid. Your mission is to gather rare energy cells, navigate perimeter walls, and outrun cyber skulls.',
-  objective:
-    'Survive the maze, collect yellow Energy Cells (+100 PTS), prevent passing through walls, and avoid contact with patrol enemies.',
-  controlsTip:
-    'Use WASD or Arrow keys on the canvas to move your hero across the coordinate surface.',
-  badge: '⚔️',
-  color: 'text-cyan-400',
-  badgeBg: 'bg-cyan-950/60',
-  badgeBorder: 'border-cyan-500/50',
-  themeGlow: 'shadow-neon-cyan',
-  lessons: LESSONS,
-  getDifficultyParams: neonDungeonDifficultyConfig,
-  engine: neonDungeonEngine,
-};
-
-const DEFAULT_CYBER_INVADERS: GameDefinition = {
-  id: 'cyber-invaders',
-  title: 'Cyber Invaders: Space Grid',
-  subtitle: 'Retro 2D Arcade Space Shooter Engine',
-  genre: 'Arcade Space Invaders',
-  tagline: 'Code horizontal strafe physics, plasma laser projectile pools, marching armada grids & shield bunkers',
-  description:
-    'Construct a legendary 2D arcade space shooter! Master weapon projectile spawning pools, marching alien fleet matrix movement, bunker degradation math, and wave defense loops across JavaScript, Python, and Java.',
-  story:
-    'Earth orbital perimeter is under siege by an alien grid fleet! Pilot the planetary defense cannon, deploy plasma laser bolts, and defend shield bunkers from incoming bombs.',
-  objective:
-    'Eliminate descending alien armada squadrons (+150 PTS), shield your base with destructible bunkers, and dodge alien plasma bombs.',
-  controlsTip:
-    'Use A/D or Left/Right Arrow keys to strafe, and press Space, W, or Up Arrow to fire plasma lasers.',
-  badge: '🚀',
-  color: 'text-pink-400',
-  badgeBg: 'bg-pink-950/60',
-  badgeBorder: 'border-pink-500/50',
-  themeGlow: 'shadow-neon-magenta',
-  lessons: CYBER_INVADERS_LESSONS,
-  getDifficultyParams: cyberInvadersDifficultyConfig,
-  engine: cyberInvadersEngine,
-};
-
-/**
- * Robust, production-grade GameRegistry service implementation.
- * Encapsulates game configurations, runtime dynamic loading, and validation.
+ * Registry for built-in and runtime game definitions.
  */
 export class GameRegistryService<T extends GameDefinition = GameDefinition> implements IGameRegistry<T> {
   private gamesMap: Map<string, T> = new Map();
-  private defaultGameId: string = 'neon-dungeon';
+  private defaultGameId = '';
   private listeners: Set<GameRegistryListener<T>> = new Set();
 
-  constructor(initialGames?: T[], defaultId: string = 'neon-dungeon') {
-    this.defaultGameId = defaultId;
+  constructor(initialGames?: T[], defaultId?: string) {
     if (initialGames && initialGames.length > 0) {
       initialGames.forEach((game) => this.register(game, { override: true }));
+      this.setDefaultGameId(defaultId ?? initialGames[0].id);
     } else {
       this.resetToDefaults();
     }
@@ -164,10 +99,10 @@ export class GameRegistryService<T extends GameDefinition = GameDefinition> impl
    * Resets the registry to initial standard arcade games.
    */
   public resetToDefaults(): void {
+    if (builtInGames.length === 0) throw new Error('[GameRegistry] At least one built-in game is required.');
     this.gamesMap.clear();
-    this.register(DEFAULT_NEON_DUNGEON as unknown as T, { override: true });
-    this.register(DEFAULT_CYBER_INVADERS as unknown as T, { override: true });
-    this.defaultGameId = 'neon-dungeon';
+    this.defaultGameId = builtInGames[0].id;
+    builtInGames.forEach((game) => this.register(game as unknown as T, { override: true }));
   }
 
   /**
@@ -179,9 +114,12 @@ export class GameRegistryService<T extends GameDefinition = GameDefinition> impl
     if (!game.id || typeof game.id !== 'string' || game.id.trim() === '') {
       errors.push('Game configuration must have a non-empty string "id".');
     }
-    if (!game.title || typeof game.title !== 'string') {
-      errors.push('Game configuration must have a valid string "title".');
+    for (const field of ['title', 'subtitle', 'genre', 'tagline', 'description', 'story', 'objective', 'controlsTip', 'badge'] as const) {
+      if (typeof game[field] !== 'string' || !game[field]?.trim()) {
+        errors.push(`Game configuration must have a non-empty string "${field}".`);
+      }
     }
+    if (typeof game.getDifficultyParams !== 'function') errors.push('Game configuration must implement getDifficultyParams(level).');
     if (!game.engine || typeof game.engine !== 'object') {
       errors.push('Game configuration must provide an "engine" strategy implementation.');
     } else {
@@ -198,11 +136,39 @@ export class GameRegistryService<T extends GameDefinition = GameDefinition> impl
     if (!Array.isArray(game.lessons) || game.lessons.length === 0) {
       errors.push('Game configuration must provide at least one LessonStep in "lessons".');
     } else {
+      const lessonIds = new Set<string>();
       game.lessons.forEach((lesson, idx) => {
         if (!lesson.id || !lesson.title || !lesson.codeBoilerplate || !lesson.solution) {
           errors.push(`Lesson at index ${idx} is missing required fields (id, title, codeBoilerplate, or solution).`);
         }
+        for (const language of ['javascript', 'python', 'java'] as const) {
+          if (typeof lesson.codeBoilerplate?.[language] !== 'string' || typeof lesson.solution?.[language] !== 'string') {
+            errors.push(`Lesson ${lesson.id || idx} needs ${language} boilerplate and solution strings.`);
+          }
+        }
+        if (lessonIds.has(lesson.id)) errors.push(`Duplicate lesson ID within game: ${lesson.id}`);
+        lessonIds.add(lesson.id);
       });
+    }
+    if (game.touchControls) {
+      const positions = new Set<string>();
+      for (const button of game.touchControls.buttons) {
+        if (button.row < 1 || button.column < 1 || button.row > 3 || button.column > 3) {
+          errors.push(`Touch control ${button.label} must use a row and column from 1 to 3.`);
+        }
+        const position = `${button.row}:${button.column}`;
+        if (positions.has(position)) errors.push(`Duplicate touch control position: ${position}`);
+        positions.add(position);
+        if (game.inputKeys && !game.inputKeys.includes(button.key)) errors.push(`Touch control ${button.label} uses a key missing from inputKeys.`);
+      }
+    }
+    if (game.canvas && (!Number.isFinite(game.canvas.width) || !Number.isFinite(game.canvas.height) || game.canvas.width <= 0 || game.canvas.height <= 0)) {
+      errors.push('Canvas width and height must be positive numbers.');
+    }
+    for (const snippet of game.snippets ?? []) {
+      for (const language of ['javascript', 'python', 'java'] as const) {
+        if (typeof snippet.snippets?.[language] !== 'string') errors.push(`Snippet ${snippet.id} needs ${language} code.`);
+      }
     }
 
     return {
@@ -229,20 +195,17 @@ export class GameRegistryService<T extends GameDefinition = GameDefinition> impl
     }
 
     this.gamesMap.set(game.id, game);
+    if (!this.defaultGameId) this.defaultGameId = game.id;
     this.notifyListeners();
   }
 
-  /**
-   * Unregisters a game by ID. Default game cannot be unregistered.
-   */
+  /** Remove a game, selecting another default when necessary. */
   public unregister(gameId: string): boolean {
-    if (gameId === this.defaultGameId) {
-      console.warn(`[GameRegistry] Cannot unregister default game "${gameId}".`);
-      return false;
-    }
+    if (!this.gamesMap.has(gameId) || this.gamesMap.size === 1) return false;
 
     const deleted = this.gamesMap.delete(gameId);
     if (deleted) {
+      if (gameId === this.defaultGameId) this.defaultGameId = this.gamesMap.keys().next().value!;
       this.notifyListeners();
     }
     return deleted;
@@ -273,13 +236,12 @@ export class GameRegistryService<T extends GameDefinition = GameDefinition> impl
       return defaultGame;
     }
 
-    // Ultimate fallback if map is somehow empty
     const firstAvailable = Array.from(this.gamesMap.values())[0];
     if (firstAvailable) {
       return firstAvailable;
     }
 
-    return DEFAULT_NEON_DUNGEON as unknown as T;
+    throw new Error('[GameRegistry] No games are registered.');
   }
 
   /**
@@ -314,40 +276,13 @@ export class GameRegistryService<T extends GameDefinition = GameDefinition> impl
     this.notifyListeners();
   }
 
-  /**
-   * Finds which game owns a given lesson ID.
-   */
-  public findGameByLessonId(lessonId: string): T | undefined {
-    for (const game of this.gamesMap.values()) {
-      if (game.lessons.some((l) => l.id === lessonId)) {
-        return game;
-      }
-    }
-    return undefined;
-  }
-
-  /**
-   * Resolves a lesson step generically.
-   */
+  /** Resolve a lesson only within the requested game. */
   public getLesson(gameId: string, lessonId: string): LessonStep {
-    let game = this.get(gameId);
-    let found = game?.lessons.find((l) => l.id === lessonId);
-
-    if (!found) {
-      const ownerGame = this.findGameByLessonId(lessonId);
-      if (ownerGame) {
-        game = ownerGame;
-        found = ownerGame.lessons.find((l) => l.id === lessonId);
-      }
-    }
-
-    if (found) {
-      return found;
-    }
-
-    // Resilient fallback to first lesson of requested or default game
-    const resolvedGame = game || this.getOrFallback();
-    return resolvedGame.lessons[0];
+    const game = this.get(gameId);
+    if (!game) throw new Error(`Unknown game: ${gameId}`);
+    const lesson = game.lessons.find((item) => item.id === lessonId);
+    if (!lesson) throw new Error(`Unknown lesson ${lessonId} in ${gameId}`);
+    return lesson;
   }
 
   /**

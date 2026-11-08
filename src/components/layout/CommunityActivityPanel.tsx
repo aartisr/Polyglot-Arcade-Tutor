@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
-import { db, handleFirestoreError, OperationType } from '../../lib/firebase';
+import { db } from '../../lib/firebase';
 import { Activity, Flame, Trophy, Award, X, Sparkles, ChevronRight, Zap } from 'lucide-react';
 
 export interface ActivityFeedItem {
@@ -55,7 +55,10 @@ export const CommunityActivityPanel: React.FC<CommunityActivityPanelProps> = ({ 
         });
         setLoading(false);
       },
-      (error) => handleFirestoreError(error, OperationType.LIST, 'high_scores')
+      (error) => {
+        console.warn('Community scores unavailable:', error);
+        setLoading(false);
+      }
     );
 
     const achRef = collection(db, 'user_achievements');
@@ -84,7 +87,10 @@ export const CommunityActivityPanel: React.FC<CommunityActivityPanelProps> = ({ 
           return merged.slice(0, 20);
         });
       },
-      (error) => handleFirestoreError(error, OperationType.LIST, 'user_achievements')
+      (error) => {
+        console.warn('Community achievements unavailable:', error);
+        setLoading(false);
+      }
     );
 
     return () => {

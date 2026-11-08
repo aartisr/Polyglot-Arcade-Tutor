@@ -1,14 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useWorkspaceStore, setLanguage, setDifficulty, updateCode, appendLog } from '../../store/workspaceStore';
 import { Language, DifficultyLevel } from '../../types/lesson';
 import { getLessonByGameAndId } from '../../data/gamesRegistry';
-import { RotateCcw, Eye, Gauge, Zap } from 'lucide-react';
+import { RotateCcw, Eye, Gauge, SlidersHorizontal } from 'lucide-react';
 
 interface LanguageSelectorProps {
   currentStepId: string;
 }
 
 export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ currentStepId }) => {
+  const [showOptions, setShowOptions] = useState(false);
   const activeGameId = useWorkspaceStore((state) => state.activeGameId);
   const activeLanguage = useWorkspaceStore((state) => state.activeLanguage);
   const difficulty = useWorkspaceStore((state) => state.difficulty);
@@ -52,9 +53,10 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ currentStepI
   };
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 bg-slate-900 border-b border-slate-800 shrink-0">
+    <div className="flex flex-col gap-2 px-3 py-2 bg-slate-900 border-b border-slate-800 shrink-0 min-w-0">
+      <div className="flex items-center justify-between gap-2 min-w-0">
       {/* Language Switcher Tabs */}
-      <div className="flex items-center gap-1 p-0.5 bg-slate-950 rounded-lg border border-slate-800">
+      <div className="flex min-w-0 items-center gap-1 overflow-x-auto p-0.5 bg-slate-950 rounded-lg border border-slate-800">
         {languages.map((lang) => {
           const isActive = activeLanguage === lang.id;
           return (
@@ -64,7 +66,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ currentStepI
                 setLanguage(lang.id);
                 appendLog(`[SYSTEM] Switched active language tab to ${lang.label}`);
               }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${
+              className={`flex shrink-0 items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${
                 isActive
                   ? 'bg-slate-800 text-slate-100 shadow-sm border border-slate-700/80'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
@@ -79,11 +81,16 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ currentStepI
         })}
       </div>
 
-      {/* Range Slider for Difficulty Level (1-5) */}
-      <div className="flex items-center gap-2 px-2.5 py-1 bg-slate-950 rounded-lg border border-slate-800">
+      <button type="button" aria-expanded={showOptions} onClick={() => setShowOptions((value) => !value)} className="flex shrink-0 items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-2 text-xs font-medium text-slate-300 hover:text-cyan-300">
+          <SlidersHorizontal className="h-4 w-4" />
+          <span>Options</span>
+      </button>
+      </div>
+      {showOptions && <div className="flex flex-wrap items-center gap-3 rounded-xl border border-slate-700 bg-slate-950 p-2">
+      <label className="flex items-center gap-2 px-2.5 py-2 bg-slate-950 rounded-lg border border-slate-800">
         <div className="flex items-center gap-1.5 text-xs text-slate-400 font-mono">
           <Gauge className="w-3.5 h-3.5 text-cyan-400" />
-          <span className="hidden sm:inline">Diff:</span>
+          <span>Difficulty</span>
         </div>
 
         <input
@@ -93,19 +100,15 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ currentStepI
           step="1"
           value={difficulty}
           onChange={handleSliderChange}
-          className="w-20 sm:w-24 h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+          className="w-16 h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
           title={`Adjust game difficulty (Level ${difficulty}: ${difficultyLabels[difficulty].name})`}
         />
 
         <div className="flex items-center gap-1 text-xs font-mono font-semibold">
           <span className="px-1.5 py-0.5 bg-slate-800 rounded text-slate-200">Lvl {difficulty}</span>
-          <span className={`hidden md:inline ${difficultyLabels[difficulty].color}`}>
-            ({difficultyLabels[difficulty].speed})
-          </span>
         </div>
-      </div>
+      </label>
 
-      {/* Reset & Solution Action Buttons */}
       <div className="flex items-center gap-2">
         <button
           onClick={handleResetCode}
@@ -113,7 +116,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ currentStepI
           title="Reset starter boilerplate"
         >
           <RotateCcw className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">Reset</span>
+          <span>Reset</span>
         </button>
 
         <button
@@ -122,9 +125,10 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ currentStepI
           title="Show solution code"
         >
           <Eye className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">Solution</span>
+          <span>Solution</span>
         </button>
       </div>
+      </div>}
     </div>
   );
 };

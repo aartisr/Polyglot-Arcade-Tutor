@@ -3,18 +3,22 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
     "build": "vite build",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "test:games": "bun scripts/verify-games.ts"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",
     "@monaco-editor/react": "^4.7.0",
     "@tailwindcss/vite": "^4.3.3",
-    "@tanstack/react-query": "^5.107.1",
+    "@tanstack/react-query": "^5.105.3",
     "@tanstack/react-router": "^1.170.46",
     "@tanstack/react-store": "^0.11.2",
     "@tanstack/store": "^0.11.2",

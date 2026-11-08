@@ -1,6 +1,7 @@
 import { Store } from '@tanstack/store';
 import { useStore } from '@tanstack/react-store';
 import { Language, DifficultyLevel, WorkspaceState } from '../types/lesson';
+import { gameRegistry } from '../services/GameRegistry';
 
 export interface RankInfo {
   level: number;
@@ -36,22 +37,18 @@ const initialCodeMap: Record<Language, string> = {
   java: '',
 };
 
+const defaultGame = gameRegistry.getOrFallback();
+
 export const workspaceStore = new Store<WorkspaceState>({
-  activeGameId: 'neon-dungeon',
+  activeGameId: defaultGame.id,
   activeLanguage: 'javascript',
   codeMap: initialCodeMap,
-  codeMapByGame: {
-    'neon-dungeon': { ...initialCodeMap },
-    'cyber-invaders': { ...initialCodeMap },
-  },
+  codeMapByGame: {},
   isRunning: false,
   logs: ['[SYSTEM] PolyGlot Arcade Engine ready. Select a lesson step and press Run Code.'],
-  currentStepId: 'step-1',
+  currentStepId: defaultGame.lessons[0].id,
   completedSteps: {},
-  completedStepsByGame: {
-    'neon-dungeon': {},
-    'cyber-invaders': {},
-  },
+  completedStepsByGame: {},
   validationResults: {},
   soundEnabled: true,
   difficulty: 3,
@@ -65,6 +62,8 @@ export const workspaceStore = new Store<WorkspaceState>({
 
 // Helper actions
 export const setActiveGame = (gameId: string) => {
+  const game = gameRegistry.get(gameId);
+  if (!game) return;
   workspaceStore.setState((state) => {
     if (state.activeGameId === gameId) return state;
 
@@ -76,7 +75,7 @@ export const setActiveGame = (gameId: string) => {
       activeGameId: gameId,
       codeMap: { ...gameCodeMap },
       completedSteps: { ...gameCompleted },
-      currentStepId: 'step-1',
+      currentStepId: game.lessons[0].id,
       isRunning: false,
       validationResults: {},
       logs: [...state.logs.slice(-80), `[SYSTEM] Switched active tutorial to game: ${gameId}`],
@@ -107,7 +106,7 @@ export const toggleCrtMode = () => {
 
 export const updateCode = (lang: Language, code: string) => {
   workspaceStore.setState((state) => {
-    const activeGame = state.activeGameId || 'neon-dungeon';
+    const activeGame = state.activeGameId;
     const existingGameCodes = state.codeMapByGame?.[activeGame] || { ...state.codeMap };
 
     return {
@@ -158,7 +157,7 @@ export const setCurrentStepId = (stepId: string) => {
 
 export const setStepCompleted = (stepId: string, completed = true) => {
   workspaceStore.setState((state) => {
-    const activeGame = state.activeGameId || 'neon-dungeon';
+    const activeGame = state.activeGameId;
     const existingGameCompleted = state.completedStepsByGame?.[activeGame] || {};
 
     return {

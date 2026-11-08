@@ -11,6 +11,7 @@ import {
   incrementCombo,
 } from '../../store/workspaceStore';
 import { arcadeAudio } from '../../utils/audio';
+import { getGameById } from '../../data/gamesRegistry';
 import { unlockAchievement } from '../../lib/achievementService';
 import { LanguageCompareModal } from './LanguageCompareModal';
 import { BookOpen, CheckCircle2, XCircle, Play, HelpCircle, Code2, ArrowRight, Lightbulb, Sparkles } from 'lucide-react';
@@ -18,13 +19,16 @@ import { BookOpen, CheckCircle2, XCircle, Play, HelpCircle, Code2, ArrowRight, L
 interface LessonViewerProps {
   lesson: LessonStep;
   onNavigateNext?: () => void;
+  isFinalLesson?: boolean;
 }
 
-export const LessonViewer: React.FC<LessonViewerProps> = ({ lesson, onNavigateNext }) => {
+export const LessonViewer: React.FC<LessonViewerProps> = ({ lesson, onNavigateNext, isFinalLesson = false }) => {
   const [showCompareModal, setShowCompareModal] = useState(false);
   const [activeHintIndex, setActiveHintIndex] = useState<number | null>(null);
 
   const activeLanguage = useWorkspaceStore((state) => state.activeLanguage);
+  const activeGameId = useWorkspaceStore((state) => state.activeGameId);
+  const activeGame = getGameById(activeGameId);
   const codeMap = useWorkspaceStore((state) => state.codeMap);
   const logs = useWorkspaceStore((state) => state.logs);
   const validationResults = useWorkspaceStore((state) => state.validationResults);
@@ -75,14 +79,11 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({ lesson, onNavigateNe
       }
       unlockAchievement('flawless_compiler');
 
-      if (lesson.id === 'step-3') {
-        unlockAchievement('aabb_architect');
-      }
+      activeGame.achievements?.lessonComplete?.[lesson.id]?.forEach(unlockAchievement);
 
-      // Check if all 4 steps completed
-      const totalDone = Object.keys({ ...completedSteps, [lesson.id]: true }).length;
-      if (totalDone >= 4) {
-        unlockAchievement('master_rogue');
+      const completedNow = { ...completedSteps, [lesson.id]: true };
+      if (activeGame.lessons.every((step) => completedNow[step.id])) {
+        activeGame.achievements?.gameComplete?.forEach(unlockAchievement);
       }
 
       confetti({
@@ -101,9 +102,9 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({ lesson, onNavigateNe
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <span className="text-[11px] font-bold font-mono px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800/60">
-              STEP {lesson.stepNumber} OF 4
+              STEP {lesson.stepNumber} OF {activeGame.lessons.length}
             </span>
-            <span className="text-xs text-slate-400 font-mono">Neon Dungeon: Rogue Crawler</span>
+            <span className="text-xs text-slate-400 font-mono">{activeGame.title}</span>
           </div>
 
           <button
@@ -117,6 +118,11 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({ lesson, onNavigateNe
 
         <h1 className="text-lg font-bold text-slate-100 mb-1">{lesson.title}</h1>
         <p className="text-xs text-slate-400 leading-relaxed">{lesson.subtitle}</p>
+        <p className="mt-3 rounded-lg border border-cyan-900/50 bg-cyan-950/20 px-3 py-2 text-xs leading-relaxed text-cyan-100">
+          {isFinalLesson
+            ? 'Play game above opens the completed reference game. Download game saves that playable version as an HTML file. Download my code saves only your current editor text.'
+            : 'Read this step, change the code, then choose Preview this step above. The complete playable game is available in the final lesson.'}
+        </p>
       </div>
 
       {/* Main Instruction Body */}
@@ -151,11 +157,11 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({ lesson, onNavigateNe
                   </div>
                   <div className="relative h-28 bg-slate-950 rounded border border-slate-800 p-2 flex items-center justify-center">
                     <span className="absolute top-1 left-2 text-[10px] font-mono text-cyan-400">(0,0)</span>
-                    <span className="absolute top-1 right-2 text-[10px] font-mono text-slate-500">+X (400px) &rarr;</span>
-                    <span className="absolute bottom-1 left-2 text-[10px] font-mono text-slate-500">+Y (400px) &darr;</span>
+                    <span className="absolute top-1 right-2 text-[10px] font-mono text-slate-500">+X ({activeGame.canvas?.width ?? 400}px) &rarr;</span>
+                    <span className="absolute bottom-1 left-2 text-[10px] font-mono text-slate-500">+Y ({activeGame.canvas?.height ?? 400}px) &darr;</span>
                     
                     <div className="w-10 h-10 bg-cyan-400/20 border-2 border-cyan-400 rounded flex items-center justify-center shadow-lg shadow-cyan-500/20">
-                      <span className="text-[9px] font-mono text-cyan-300 font-bold">HERO</span>
+                      <span className="text-[9px] font-mono text-cyan-300 font-bold">PLAYER</span>
                     </div>
                   </div>
                 </div>
@@ -297,7 +303,11 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({ lesson, onNavigateNe
         </div>
 
         {/* Step Navigation Button */}
-        {onNavigateNext && (
+        {isFinalLesson ? (
+          <div className="rounded-xl border border-cyan-800/60 bg-cyan-950/20 p-4 text-xs text-cyan-100">
+            Final lesson reached. Use <strong>Play game</strong> or <strong>Download game</strong> in the bar above whenever you are ready.
+          </div>
+        ) : onNavigateNext && (
           <div className="pt-4 border-t border-slate-800 flex items-center justify-between">
             <div className="text-xs text-slate-400 font-mono">
               {isStepCompleted ? 'Step completed! Ready for next level.' : 'Complete tests to advance.'}

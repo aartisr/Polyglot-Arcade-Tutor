@@ -93,11 +93,13 @@ export function subscribeUnlockedAchievements(onUpdate: (unlockedMap: Record<str
         onUpdate(map);
       },
       (error) => {
-        handleFirestoreError(error, OperationType.LIST, COLLECTION_NAME);
+        console.warn('Achievements unavailable:', error);
+        onUpdate({});
       }
     );
   } catch (error) {
-    handleFirestoreError(error, OperationType.LIST, COLLECTION_NAME);
+    console.warn('Achievements unavailable:', error);
+    onUpdate({});
     return () => {};
   }
 }

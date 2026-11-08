@@ -19,6 +19,7 @@ export const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({
   const [scores, setScores] = useState<HighScoreRecord[]>([]);
   const [filterLang, setFilterLang] = useState<Language | 'all'>('all');
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
 
   // Form submission state
   const activeLanguage = useWorkspaceStore((state) => state.activeLanguage);
@@ -31,10 +32,14 @@ export const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({
 
   useEffect(() => {
     setLoading(true);
+    setLoadError(false);
     const unsubscribe = subscribeTopHighScores((updatedScores) => {
       setScores(updatedScores);
       setLoading(false);
-    }, filterLang);
+    }, filterLang, () => {
+      setLoading(false);
+      setLoadError(true);
+    });
 
     return () => unsubscribe();
   }, [filterLang]);
@@ -149,7 +154,9 @@ export const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({
 
       {/* Leaderboard Content */}
       <div className="p-5 space-y-6">
-        {loading ? (
+        {loadError ? (
+          <div className="p-6 text-center text-sm text-slate-400">Leaderboard is temporarily unavailable. You can keep using the tutor.</div>
+        ) : loading ? (
           <div className="py-16 flex flex-col items-center justify-center text-slate-500 font-mono text-xs">
             <Loader2 className="w-8 h-8 text-cyan-400 animate-spin mb-3" />
             <span>Connecting to Firestore Live Leaderboard...</span>

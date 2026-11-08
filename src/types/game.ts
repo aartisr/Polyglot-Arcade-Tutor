@@ -36,6 +36,29 @@ export interface GameEngineStrategy {
   ) => void;
 }
 
+export interface GameSnippet {
+  id: string;
+  label: string;
+  description: string;
+  snippets: Record<Language, string>;
+}
+
+export interface GameManualItem {
+  title: string;
+  description: string;
+  keys?: string[];
+  symbol?: string;
+}
+
+export interface TouchControl {
+  key: string;
+  label: string;
+  icon: 'up' | 'down' | 'left' | 'right' | 'fire' | 'restart';
+  row: number;
+  column: number;
+  emphasis?: boolean;
+}
+
 export interface GameDefinition {
   id: string;
   title: string;
@@ -47,13 +70,26 @@ export interface GameDefinition {
   objective: string;
   controlsTip: string;
   badge: string;
-  color: string;
-  badgeBg: string;
-  badgeBorder: string;
-  themeGlow: string;
+  accentColor?: string;
   lessons: LessonStep[];
   getDifficultyParams: (level: DifficultyLevel) => DifficultyParamDetail;
   engine: GameEngineStrategy;
+  snippets?: GameSnippet[];
+  manual?: {
+    controls: GameManualItem[];
+    entities: GameManualItem[];
+  };
+  touchControls?: {
+    label: string;
+    buttons: TouchControl[];
+  };
+  inputKeys?: string[];
+  canvas?: { width: number; height: number };
+  achievements?: {
+    lessonComplete?: Record<string, string[]>;
+    gameComplete?: string[];
+  };
+  standaloneHtml?: (difficulty: DifficultyLevel) => string;
 }
 
 /**

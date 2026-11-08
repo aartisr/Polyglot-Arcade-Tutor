@@ -3,6 +3,12 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @layer base {
+  html, body, #root {
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+  }
+
   body {
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   }
@@ -10,6 +16,13 @@
   code, pre, .font-mono {
     font-family: 'JetBrains Mono', monospace;
   }
+}
+
+.app-shell {
+  height: 100vh;
+  height: 100dvh;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* Cyberpunk Synthwave Glow Utilities */

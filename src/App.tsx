@@ -16,7 +16,14 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <OfflineIndicator />
-      <RouterProvider router={router} />
+      <React.Suspense fallback={
+        <main className="flex min-h-dvh flex-col items-center justify-center gap-3 bg-slate-950 p-6 text-center text-slate-100">
+          <p className="text-sm font-semibold">Opening the arcade…</p>
+          <a href="/" className="text-sm text-cyan-300 underline underline-offset-4">Home</a>
+        </main>
+      }>
+        <RouterProvider router={router} />
+      </React.Suspense>
     </QueryClientProvider>
   );
 }

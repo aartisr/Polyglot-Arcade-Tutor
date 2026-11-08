@@ -1,7 +1,9 @@
 import { gameRegistry } from '../services/GameRegistry';
 import { GameDefinition } from '../types/game';
 
-export const DEFAULT_GAME_ID = gameRegistry.getDefaultGameId();
+export function getDefaultGameId(): string {
+  return gameRegistry.getDefaultGameId();
+}
 
 export const GAMES_REGISTRY: Record<string, GameDefinition> = new Proxy({} as Record<string, GameDefinition>, {
   get: (_target, prop: string) => gameRegistry.get(prop),
@@ -23,10 +25,6 @@ export function getAllGames(): GameDefinition[] {
 
 export function getGameById(gameId?: string): GameDefinition {
   return gameRegistry.getOrFallback(gameId);
-}
-
-export function findGameByLessonId(lessonId: string): GameDefinition | undefined {
-  return gameRegistry.findGameByLessonId(lessonId);
 }
 
 export function getLessonByGameAndId(gameId: string, lessonId: string) {

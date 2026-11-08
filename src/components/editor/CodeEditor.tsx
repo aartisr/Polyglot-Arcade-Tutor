@@ -127,20 +127,19 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ currentStepId }) => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-slate-950 border-r border-slate-800 overflow-hidden">
-      <div className="relative flex items-center justify-between bg-slate-900 border-b border-slate-800">
-        <div className="flex-1 flex items-center">
-          <LanguageSelector currentStepId={currentStepId} />
+    <div className="flex flex-col h-full min-w-0 bg-slate-950 border-r border-slate-800 overflow-hidden">
+      <div className="relative flex flex-col bg-slate-900 border-b border-slate-800">
+        <LanguageSelector currentStepId={currentStepId} />
+        <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2">
           {coopSessionId && (
-            <div className="ml-3 flex items-center gap-1.5 px-3 py-1 bg-indigo-950/70 border border-indigo-500/50 rounded-lg text-indigo-300 text-[10px] font-mono animate-pulse">
+            <div className="flex items-center gap-1.5 px-3 py-1 bg-indigo-950/70 border border-indigo-500/50 rounded-lg text-indigo-300 text-[10px] font-mono">
               <Users className="w-3 h-3" />
               <span>LIVE CO-OP: {coopSessionId}</span>
             </div>
           )}
-        </div>
 
-        {/* Snippets, Test Suite & Theme Selectors */}
-        <div className="pr-3 flex items-center gap-2 shrink-0">
+        {/* Editor actions */}
+        <div className="ml-auto flex flex-wrap items-center gap-2 min-w-0">
           <BoilerplateSnippetsMenu />
 
           {/* Run Tests Button */}
@@ -165,6 +164,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ currentStepId }) => {
             <Palette className="w-3.5 h-3.5" />
             <span>{selectedTheme === SYNTHWAVE_NEON_THEME_ID ? 'NEON' : 'MATRIX'}</span>
           </button>
+        </div>
         </div>
       </div>
       

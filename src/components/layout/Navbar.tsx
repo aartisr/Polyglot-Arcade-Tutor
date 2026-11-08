@@ -1,53 +1,51 @@
-import React, { useState } from 'react';
+import React, { Suspense, useState } from 'react';
+import { Link } from '@tanstack/react-router';
 import { getGameById } from '../../data/gamesRegistry';
 import {
   useWorkspaceStore,
   toggleSound,
   toggleCrtMode,
   setCurrentStepId,
-  getRankForXp,
-  RANKS,
   clearLogs,
+  setIsRunning,
 } from '../../store/workspaceStore';
 import { arcadeAudio } from '../../utils/audio';
 import {
-  Gamepad2,
+  House,
   Volume2,
   VolumeX,
   CheckCircle2,
-  Sparkles,
   HelpCircle,
   Tv,
   Trophy,
   Award,
   Target,
-  Flame,
-  Zap,
   User,
   Share2,
   Swords,
-  Command,
 } from 'lucide-react';
 import { GameSwitcher } from './GameSwitcher';
 import { GameManualModal } from './GameManualModal';
-import { HighScoreModal } from '../highscores/HighScoreModal';
-import { AchievementsModal } from '../achievements/AchievementsModal';
 import { DailyQuestsModal, DAILY_QUESTS } from '../gamification/DailyQuestsModal';
 import { LevelUpModal } from '../gamification/LevelUpModal';
 import { XpToastFloating } from '../gamification/XpToastFloating';
-import { UserProfileModal } from '../profile/UserProfileModal';
-import { ShareProgressModal } from '../social/ShareProgressModal';
-import { CodeDuelLobbyModal } from '../social/CodeDuelLobbyModal';
 import { QuickStartGuideModal } from './QuickStartGuideModal';
 import { CommandPaletteModal } from '../editor/CommandPaletteModal';
 import { PWAInstallButton } from './PWAInstallButton';
 
+const HighScoreModal = React.lazy(() => import('../highscores/HighScoreModal').then((module) => ({ default: module.HighScoreModal })));
+const AchievementsModal = React.lazy(() => import('../achievements/AchievementsModal').then((module) => ({ default: module.AchievementsModal })));
+const UserProfileModal = React.lazy(() => import('../profile/UserProfileModal').then((module) => ({ default: module.UserProfileModal })));
+const ShareProgressModal = React.lazy(() => import('../social/ShareProgressModal').then((module) => ({ default: module.ShareProgressModal })));
+const CodeDuelLobbyModal = React.lazy(() => import('../social/CodeDuelLobbyModal').then((module) => ({ default: module.CodeDuelLobbyModal })));
+
 interface NavbarProps {
   currentStepId: string;
   onSelectStep: (stepId: string) => void;
+  onSelectGame: (gameId: string, stepId?: string) => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ currentStepId, onSelectStep }) => {
+export const Navbar: React.FC<NavbarProps> = ({ currentStepId, onSelectStep, onSelectGame }) => {
   const [showManual, setShowManual] = useState(false);
   const [showHighScores, setShowHighScores] = useState(false);
   const [showBadges, setShowBadges] = useState(false);
@@ -85,28 +83,18 @@ export const Navbar: React.FC<NavbarProps> = ({ currentStepId, onSelectStep }) =
 
   const activeGameId = useWorkspaceStore((state) => state.activeGameId);
   const activeGame = getGameById(activeGameId);
-  const activeLanguage = useWorkspaceStore((state) => state.activeLanguage);
   const completedSteps = useWorkspaceStore(
     (state) => state.completedStepsByGame?.[state.activeGameId] || state.completedSteps
   );
   const soundEnabled = useWorkspaceStore((state) => state.soundEnabled);
   const crtModeEnabled = useWorkspaceStore((state) => state.crtModeEnabled);
   const xp = useWorkspaceStore((state) => state.xp);
-  const comboStreak = useWorkspaceStore((state) => state.comboStreak);
   const completedQuests = useWorkspaceStore((state) => state.completedQuests);
   const fullState = useWorkspaceStore((state) => state);
 
   const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   arcadeAudio.enabled = soundEnabled;
-
-  const currentRank = getRankForXp(xp);
-  const currentLevelMinXp = currentRank.minXp;
-  const currentLevelMaxXp = currentRank.maxXp;
-  const rankProgress = Math.min(
-    100,
-    Math.max(0, Math.round(((xp - currentLevelMinXp) / (currentLevelMaxXp - currentLevelMinXp)) * 100))
-  );
 
   // Count claimable quests
   const claimableCount = DAILY_QUESTS.filter(
@@ -122,59 +110,24 @@ export const Navbar: React.FC<NavbarProps> = ({ currentStepId, onSelectStep }) =
 
   return (
     <>
-      <header className="flex items-center justify-between gap-3 sm:gap-6 px-3 sm:px-6 py-2 bg-slate-950 border-b border-slate-800 text-slate-100 shrink-0 relative z-30">
-        {/* Zone 1: Brand Wordmark, Game Switcher & Developer Level Badge */}
+      <header className="flex items-center justify-between gap-2 sm:gap-6 px-2 sm:px-6 py-2 bg-slate-950 border-b border-slate-800 text-slate-100 shrink-0 relative z-30 min-w-0">
+        {/* Navigation */}
         <div className="flex items-center gap-2 sm:gap-3 shrink-0 min-w-0">
-          <div className="p-1.5 sm:p-2 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 shadow-neon-cyan shrink-0">
-            <Gamepad2 className="w-4 h-4 sm:w-5 sm:h-5" />
-          </div>
-          <a
-            href="/"
-            onClick={(e) => {
-              e.preventDefault();
-              handleStepClick(activeGame.lessons[0].id);
-            }}
-            className="text-xs sm:text-base font-bold tracking-tight text-slate-100 hover:text-cyan-400 transition-colors whitespace-nowrap shrink-0 flex items-center gap-1 sm:gap-2"
+          <Link
+            to="/"
+            onClick={() => setIsRunning(false)}
+            aria-label="Go to home page"
+            className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-900 px-2.5 py-2 text-xs font-semibold text-slate-100 transition-colors hover:border-cyan-500/50 hover:text-cyan-300"
           >
-            <span className="hidden xs:inline">PolyGlot Arcade</span>
-            <span className="xs:hidden">Arcade</span>
-          </a>
+            <House className="h-4 w-4 shrink-0" />
+            <span>Home</span>
+          </Link>
 
-          {/* Generic Game Switcher Dropdown */}
-          <GameSwitcher />
-
-          {/* Hack Club Haven Sponsor Logo Badge */}
-          <div className="hidden lg:flex items-center gap-1.5 px-3 py-1 bg-lime-950/70 border border-lime-500/70 rounded-lg shadow-[0_0_15px_rgba(132,204,22,0.3)] shrink-0">
-            <img
-              src="/assets/aistudio/image_59a3d311.png"
-              alt="Hack Club Haven"
-              className="w-7 h-7 object-contain rounded-md animate-pulse"
-            />
-            <span className="text-xs font-mono font-bold text-lime-300 tracking-wider">Hack Club Haven</span>
-          </div>
-
-          {/* Rank Level Pill (Desktop) */}
-          <button
-            onClick={() => {
-              arcadeAudio.playClick();
-              setShowProfile(true);
-            }}
-            className={`hidden 2xl:flex items-center gap-2 px-2.5 py-1 rounded-lg border ${currentRank.borderColor} ${currentRank.bgColor} text-xs font-mono font-bold hover:brightness-125 transition-all cursor-pointer`}
-            title={`Developer Rank: ${currentRank.title} (Click to open profile)`}
-          >
-            <span>{currentRank.badge}</span>
-            <span className={currentRank.color}>Lvl {currentRank.level}: {currentRank.title}</span>
-            <div className="w-16 h-1.5 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
-              <div
-                className="h-full bg-cyan-400 transition-all duration-300"
-                style={{ width: `${rankProgress}%` }}
-              />
-            </div>
-          </button>
+          <GameSwitcher onSelectGame={onSelectGame} />
         </div>
 
         {/* Zone 2: Step Navigation Links for Active Game (Desktop only) */}
-        <nav className="hidden lg:flex items-center gap-1.5 xl:gap-2 overflow-x-auto py-1">
+        <nav className="hidden xl:flex items-center gap-1.5 overflow-x-auto py-1" aria-label="Lesson steps">
           {activeGame.lessons.map((step) => {
             const isActive = currentStepId === step.id;
             const isDone = Boolean(completedSteps[step.id]);
@@ -204,186 +157,29 @@ export const Navbar: React.FC<NavbarProps> = ({ currentStepId, onSelectStep }) =
           })}
         </nav>
 
-        {/* Zone 3: Desktop Actions & Mobile Menu Drawer Trigger */}
+        {/* Optional actions */}
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          {/* Flame Combo Streak Counter */}
-          {comboStreak > 0 && (
-            <div className="flex items-center gap-1 px-2 py-1 bg-amber-950/60 border border-amber-500/50 text-amber-400 text-[11px] sm:text-xs font-mono font-bold rounded-lg shadow-neon-amber animate-pulse">
-              <Flame className="w-3.5 h-3.5 fill-current text-amber-500" />
-              <span>{comboStreak}x</span>
-            </div>
-          )}
-
-          {/* Desktop Full Action Toolbar (XL screens and above) */}
-          <div className="hidden xl:flex items-center gap-2">
-            {/* Command Palette Button */}
-            <button
-              onClick={() => {
-                arcadeAudio.playClick();
-                setShowCommandPalette(true);
-              }}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 border border-cyan-500/40 text-cyan-300 text-xs font-semibold rounded-lg transition-all shadow-neon-cyan cursor-pointer"
-              title="Open Command Palette (Ctrl+K)"
-            >
-              <Command className="w-4 h-4 text-cyan-400" />
-              <span>Cmd+K</span>
-            </button>
-            {/* 1v1 Code Duel Lobby Button */}
-            <button
-              onClick={() => {
-                arcadeAudio.playClick();
-                setShowDuelLobby(true);
-              }}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-cyan-950/70 hover:bg-cyan-900/80 border border-cyan-500/70 text-cyan-300 text-xs font-semibold rounded-lg transition-all shadow-neon-cyan cursor-pointer animate-pulse"
-              title="1v1 Code Duel Arena - Real-time matchmaking"
-            >
-              <Swords className="w-4 h-4 text-cyan-400" />
-              <span>1v1 Duel</span>
-            </button>
-
-            {/* Share Progress Button */}
-            <button
-              onClick={() => {
-                arcadeAudio.playClick();
-                setShowShare(true);
-              }}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-sky-950/50 hover:bg-sky-900/60 border border-sky-500/60 text-sky-300 text-xs font-semibold rounded-lg transition-all shadow-neon-cyan cursor-pointer"
-              title="Share Your Progress on Twitter / Social Media"
-            >
-              <Share2 className="w-4 h-4 text-sky-400" />
-              <span>Share</span>
-            </button>
-
-            {/* User Profile Button */}
-            <button
-              onClick={() => {
-                arcadeAudio.playClick();
-                setShowProfile(true);
-              }}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-cyan-950/50 hover:bg-cyan-900/60 border border-cyan-700/60 text-cyan-300 text-xs font-semibold rounded-lg transition-colors shadow-neon-cyan cursor-pointer"
-              title="Open Developer Profile & Stats"
-            >
-              <User className="w-4 h-4 text-cyan-400" />
-              <span>Profile</span>
-            </button>
-
-            {/* Daily Quests Button */}
-            <button
-              onClick={() => {
-                arcadeAudio.playClick();
-                setShowQuests(true);
-              }}
-              className="relative flex items-center gap-1.5 px-3 py-1.5 bg-pink-950/50 hover:bg-pink-900/60 border border-pink-700/60 text-pink-300 text-xs font-semibold rounded-lg transition-colors shadow-neon-magenta cursor-pointer"
-              title="View Daily Coding Quests"
-            >
-              <Target className="w-4 h-4 text-pink-400" />
-              <span>Quests</span>
-              {claimableCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-pink-500 text-slate-950 font-mono text-[10px] font-black flex items-center justify-center animate-bounce">
-                  {claimableCount}
-                </span>
-              )}
-            </button>
-
-            {/* Achievements Medals Button */}
-            <button
-              onClick={() => {
-                arcadeAudio.playClick();
-                setShowBadges(true);
-              }}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-950/40 hover:bg-purple-900/50 border border-purple-800/60 text-purple-300 text-xs font-semibold rounded-lg transition-colors cursor-pointer"
-              title="View Earned Badges & Achievements"
-            >
-              <Award className="w-4 h-4 text-purple-400" />
-              <span>Badges</span>
-            </button>
-
-            {/* Leaderboard High Scores Button */}
-            <button
-              onClick={() => {
-                arcadeAudio.playClick();
-                setShowHighScores(true);
-              }}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-950/40 hover:bg-amber-900/50 border border-amber-800/60 text-amber-300 text-xs font-semibold rounded-lg transition-colors shadow-neon-amber cursor-pointer"
-              title="View Global High Scores Leaderboard"
-            >
-              <Trophy className="w-4 h-4 text-amber-400" />
-              <span>High Scores</span>
-            </button>
-
-            {/* How to Play Manual Button */}
-            <button
-              onClick={() => {
-                arcadeAudio.playClick();
-                setShowManual(true);
-              }}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-cyan-300 text-xs font-semibold rounded-lg transition-colors cursor-pointer"
-              title="View Game Manual & Controls"
-            >
-              <HelpCircle className="w-4 h-4 text-cyan-400" />
-              <span>Manual</span>
-            </button>
-
-            {/* CRT Scanlines Toggle */}
-            <button
-              onClick={() => {
-                arcadeAudio.playClick();
-                toggleCrtMode();
-              }}
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-mono rounded-lg border transition-colors cursor-pointer ${
-                crtModeEnabled
-                  ? 'bg-pink-950/60 text-pink-400 border-pink-800/60 shadow-neon-magenta'
-                  : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-slate-200'
-              }`}
-              title={crtModeEnabled ? 'CRT Scanlines ON (Click to toggle)' : 'CRT Scanlines OFF'}
-            >
-              <Tv className="w-3.5 h-3.5" />
-              <span className="font-bold">CRT {crtModeEnabled ? 'ON' : 'OFF'}</span>
-            </button>
-
-            {/* Live XP Counter Pill */}
-            <div className="flex items-center gap-2 px-3 py-1 bg-slate-900 border border-cyan-500/30 rounded-lg text-xs font-mono shadow-neon-cyan">
-              <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-              <span className="text-slate-400">XP:</span>
-              <span className="text-cyan-300 font-bold">{xp}</span>
-            </div>
-          </div>
-
-          {/* Sound Toggle (Always visible on all screen sizes) */}
-          <PWAInstallButton />
-          <button
-            onClick={() => {
-              toggleSound();
-              arcadeAudio.playClick();
-            }}
-            className="p-2 text-slate-400 hover:text-slate-200 bg-slate-900 border border-slate-800 rounded-lg transition-colors cursor-pointer"
-            title={soundEnabled ? 'Mute Retro SFX' : 'Enable Retro SFX'}
-          >
-            {soundEnabled ? <Volume2 className="w-4 h-4 text-cyan-400" /> : <VolumeX className="w-4 h-4 text-slate-500" />}
-          </button>
-
-          {/* Mobile / Tablet Menu Drawer Button */}
           <button
             onClick={() => {
               arcadeAudio.playClick();
               setShowMobileMenu(!showMobileMenu);
             }}
-            className="xl:hidden flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-bold rounded-lg transition-colors cursor-pointer"
-            title="Open Arcade Tools Menu"
+            className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs font-semibold text-slate-200 transition-colors hover:border-cyan-500/50 hover:text-cyan-300"
+            aria-expanded={showMobileMenu}
+            aria-controls="arcade-more-menu"
           >
-            <span className="text-cyan-400 font-mono text-[11px] font-bold">
-              {currentRank.badge} Lvl {currentRank.level}
-            </span>
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+            More
+            {claimableCount > 0 && <span className="rounded-full bg-pink-500 px-1.5 text-[10px] text-slate-950">{claimableCount}</span>}
           </button>
         </div>
       </header>
 
-      {/* Mobile Drawer Dropdown Sheet */}
+      {/* Optional actions menu */}
       {showMobileMenu && (
-        <div className="xl:hidden bg-slate-950/95 border-b border-slate-800 px-4 py-4 space-y-4 shadow-2xl animate-in slide-in-from-top-2 duration-150">
+        <div id="arcade-more-menu" className="max-h-[calc(100dvh-3.5rem)] overflow-y-auto bg-slate-950/95 border-b border-slate-800 px-4 py-4 space-y-4 shadow-2xl animate-in slide-in-from-top-2 duration-150">
+          <PWAInstallButton />
           {/* Mobile Step Pills Bar */}
-          <div className="space-y-1.5">
+          <div className="space-y-1.5 xl:hidden">
             <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400">
               Curriculum Steps:
             </span>
@@ -500,21 +296,28 @@ export const Navbar: React.FC<NavbarProps> = ({ currentStepId, onSelectStep }) =
             </button>
           </div>
 
-          <div className="flex items-center justify-between pt-2 border-t border-slate-800/80 text-xs font-mono">
+          <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-slate-800/80 text-xs">
+            <span className="w-full text-slate-500">Settings</span>
+            <button
+              onClick={() => {
+                toggleSound();
+                arcadeAudio.playClick();
+              }}
+              className="flex items-center gap-1.5 px-3 py-2 bg-slate-900 border border-slate-800 rounded-lg text-slate-300"
+            >
+              {soundEnabled ? <Volume2 className="w-4 h-4 text-cyan-400" /> : <VolumeX className="w-4 h-4 text-slate-500" />}
+              <span>Sound {soundEnabled ? 'on' : 'off'}</span>
+            </button>
             <button
               onClick={() => {
                 arcadeAudio.playClick();
                 toggleCrtMode();
               }}
-              className="flex items-center gap-1.5 px-3 py-1 bg-slate-900 border border-slate-800 rounded-lg text-slate-300"
+              className="flex items-center gap-1.5 px-3 py-2 bg-slate-900 border border-slate-800 rounded-lg text-slate-300"
             >
               <Tv className="w-3.5 h-3.5 text-pink-400" />
-              <span>CRT Scanlines: {crtModeEnabled ? 'ON' : 'OFF'}</span>
+              <span>CRT {crtModeEnabled ? 'on' : 'off'}</span>
             </button>
-
-            <span className="text-slate-400">
-              Lang: <strong className="text-cyan-400">{activeLanguage.toUpperCase()}</strong>
-            </span>
           </div>
         </div>
       )}
@@ -522,27 +325,27 @@ export const Navbar: React.FC<NavbarProps> = ({ currentStepId, onSelectStep }) =
       {/* Floating Notifications & Modals */}
       <XpToastFloating />
       <LevelUpModal onOpenShare={() => setShowShare(true)} />
-      <UserProfileModal
-        isOpen={showProfile}
-        onClose={() => setShowProfile(false)}
-        onOpenShare={() => setShowShare(true)}
-      />
-      <ShareProgressModal isOpen={showShare} onClose={() => setShowShare(false)} />
-      <GameManualModal isOpen={showManual} onClose={() => setShowManual(false)} />
-      <HighScoreModal isOpen={showHighScores} onClose={() => setShowHighScores(false)} />
-      <AchievementsModal
-        isOpen={showBadges}
-        onClose={() => setShowBadges(false)}
-        onOpenShare={() => setShowShare(true)}
-      />
+      {showProfile && <Suspense fallback={null}>
+        <UserProfileModal isOpen={showProfile} onClose={() => setShowProfile(false)} onOpenShare={() => setShowShare(true)} />
+      </Suspense>}
+      {showShare && <Suspense fallback={null}>
+        <ShareProgressModal isOpen={showShare} onClose={() => setShowShare(false)} />
+      </Suspense>}
+      <GameManualModal isOpen={showManual} onClose={() => setShowManual(false)} onSelectGame={onSelectGame} />
+      {showHighScores && <Suspense fallback={null}>
+        <HighScoreModal isOpen={showHighScores} onClose={() => setShowHighScores(false)} />
+      </Suspense>}
+      {showBadges && <Suspense fallback={null}>
+        <AchievementsModal isOpen={showBadges} onClose={() => setShowBadges(false)} onOpenShare={() => setShowShare(true)} />
+      </Suspense>}
       <DailyQuestsModal isOpen={showQuests} onClose={() => setShowQuests(false)} />
-      <CodeDuelLobbyModal
+      {showDuelLobby && <Suspense fallback={null}><CodeDuelLobbyModal
         isOpen={showDuelLobby}
         onClose={() => setShowDuelLobby(false)}
         onSelectDuelLesson={(lessonId, gameId) => {
-          onSelectStep(lessonId);
+          onSelectGame(gameId, lessonId);
         }}
-      />
+      /></Suspense>}
       <CommandPaletteModal
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
