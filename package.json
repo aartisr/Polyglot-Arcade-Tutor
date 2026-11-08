@@ -8,11 +8,17 @@
   },
   "scripts": {
     "check:node": "node scripts/with-node.cjs --check",
+    "sync:games": "node scripts/sync-games.mjs",
+    "game:new": "node scripts/new-game.mjs",
+    "predev": "npm run sync:games",
     "dev": "node scripts/with-node.cjs node_modules/vite/bin/vite.js --port=3000 --host=0.0.0.0",
+    "prebuild": "npm run sync:games",
     "build": "node scripts/with-node.cjs node_modules/vite/bin/vite.js build",
     "preview": "node scripts/with-node.cjs node_modules/vite/bin/vite.js preview",
     "clean": "rm -rf dist server.js",
+    "prelint": "npm run sync:games",
     "lint": "tsc --noEmit",
+    "pretest:games": "npm run sync:games",
     "test:games": "bun scripts/verify-games.ts"
   },
   "dependencies": {

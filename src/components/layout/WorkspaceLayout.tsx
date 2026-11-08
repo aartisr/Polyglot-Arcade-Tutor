@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useRef, useState } from 'react';
 import { MobileCodeEditor } from '../editor/MobileCodeEditor';
 import { TerminalOutput } from '../preview/TerminalOutput';
 import { LessonStep } from '../../types/lesson';
@@ -40,6 +40,9 @@ export const WorkspaceLayout: React.FC<WorkspaceLayoutProps> = ({ lesson, onNavi
   }, []);
   const [leftWidthPercent, setLeftWidthPercent] = useState<number>(40);
   const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [editorHeightPercent, setEditorHeightPercent] = useState(60);
+  const [isDraggingEditor, setIsDraggingEditor] = useState(false);
+  const editorStackRef = useRef<HTMLDivElement>(null);
   const [rightBottomTab, setRightBottomTab] = useState<'canvas' | 'console' | 'split'>('split');
   const [showActivityFeed, setShowActivityFeed] = useState<boolean>(false);
   const [showFinishedGame, setShowFinishedGame] = useState(false);
@@ -87,6 +90,37 @@ export const WorkspaceLayout: React.FC<WorkspaceLayoutProps> = ({ lesson, onNavi
     setIsDragging(false);
   };
 
+  const setEditorHeightFromPixels = (height: number) => {
+    const stack = editorStackRef.current;
+    if (!stack) return;
+
+    const availableHeight = stack.clientHeight - 8; // Divider height
+    if (availableHeight <= 0) return;
+    const minEditor = Math.min(180, availableHeight / 2);
+    const minOutput = Math.min(160, availableHeight / 2);
+    const clampedHeight = Math.max(minEditor, Math.min(height, availableHeight - minOutput));
+    setEditorHeightPercent((clampedHeight / availableHeight) * 100);
+  };
+
+  const handleEditorPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDraggingEditor || !editorStackRef.current) return;
+    setEditorHeightFromPixels(event.clientY - editorStackRef.current.getBoundingClientRect().top);
+  };
+
+  const handleEditorPointerEnd = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    setIsDraggingEditor(false);
+  };
+
+  const handleEditorDividerKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') return;
+    event.preventDefault();
+    const availableHeight = (editorStackRef.current?.clientHeight ?? 0) - 8;
+    setEditorHeightFromPixels(availableHeight * editorHeightPercent / 100 + (event.key === 'ArrowDown' ? 24 : -24));
+  };
+
   return (
     <div
       className="flex-1 flex flex-col min-h-0 min-w-0 bg-slate-950 select-none overflow-hidden"
@@ -95,14 +129,14 @@ export const WorkspaceLayout: React.FC<WorkspaceLayoutProps> = ({ lesson, onNavi
       onMouseLeave={handleMouseUp}
     >
       {/* 1. Mobile & Tablet View Selector Bar (< lg screens) */}
-      <div className="xl:hidden flex items-center justify-between gap-2 px-2 sm:px-3 py-1.5 bg-slate-950 border-b border-slate-800 text-xs shrink-0 min-w-0">
-        <div className="flex items-center gap-0.5 sm:gap-1 p-0.5 bg-slate-900 rounded-lg border border-slate-800 min-w-0 overflow-x-auto">
+      <div className="xl:hidden flex items-center gap-2 px-2 sm:px-3 py-1.5 bg-slate-950 border-b border-slate-800 text-xs shrink-0 min-w-0">
+        <div className="grid flex-1 grid-cols-4 gap-0.5 sm:gap-1 p-0.5 bg-slate-900 rounded-lg border border-slate-800 min-w-0">
           <button
             onClick={() => {
               arcadeAudio.playClick();
               setMobileTab('guide');
             }}
-            className={`flex shrink-0 items-center gap-1 px-2 sm:px-2.5 py-1 rounded-md text-[11px] font-semibold transition-colors cursor-pointer ${
+            className={`flex min-w-0 items-center justify-center gap-1 px-1 sm:px-2.5 py-1.5 rounded-md text-[11px] font-semibold transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-cyan-400 ${
               mobileTab === 'guide'
                 ? 'bg-slate-800 text-cyan-400 border border-cyan-500/30'
                 : 'text-slate-400 hover:text-slate-200'
@@ -117,14 +151,14 @@ export const WorkspaceLayout: React.FC<WorkspaceLayoutProps> = ({ lesson, onNavi
               arcadeAudio.playClick();
               setMobileTab('editor');
             }}
-            className={`flex shrink-0 items-center gap-1 px-2 sm:px-2.5 py-1 rounded-md text-[11px] font-semibold transition-colors cursor-pointer ${
+            className={`flex min-w-0 items-center justify-center gap-1 px-1 sm:px-2.5 py-1.5 rounded-md text-[11px] font-semibold transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-cyan-400 ${
               mobileTab === 'editor'
                 ? 'bg-slate-800 text-cyan-400 border border-cyan-500/30'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
             <Code2 className="w-3.5 h-3.5" />
-            <span>Editor</span>
+            <span>Code</span>
           </button>
 
           <button
@@ -132,7 +166,7 @@ export const WorkspaceLayout: React.FC<WorkspaceLayoutProps> = ({ lesson, onNavi
               arcadeAudio.playClick();
               setMobileTab('canvas');
             }}
-            className={`flex shrink-0 items-center gap-1 px-2 sm:px-2.5 py-1 rounded-md text-[11px] font-semibold transition-colors relative cursor-pointer ${
+            className={`flex min-w-0 items-center justify-center gap-1 px-1 sm:px-2.5 py-1.5 rounded-md text-[11px] font-semibold transition-colors relative cursor-pointer focus-visible:outline-2 focus-visible:outline-cyan-400 ${
               mobileTab === 'canvas'
                 ? 'bg-slate-800 text-cyan-400 border border-cyan-500/30'
                 : 'text-slate-400 hover:text-slate-200'
@@ -150,14 +184,14 @@ export const WorkspaceLayout: React.FC<WorkspaceLayoutProps> = ({ lesson, onNavi
               arcadeAudio.playClick();
               setMobileTab('console');
             }}
-            className={`flex shrink-0 items-center gap-1 px-2 sm:px-2.5 py-1 rounded-md text-[11px] font-semibold transition-colors cursor-pointer ${
+            className={`flex min-w-0 items-center justify-center gap-1 px-1 sm:px-2.5 py-1.5 rounded-md text-[11px] font-semibold transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-cyan-400 ${
               mobileTab === 'console'
                 ? 'bg-slate-800 text-cyan-400 border border-cyan-500/30'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
             <Terminal className="w-3.5 h-3.5" />
-            <span>Console</span>
+            <span>Logs</span>
           </button>
         </div>
 
@@ -192,17 +226,12 @@ export const WorkspaceLayout: React.FC<WorkspaceLayoutProps> = ({ lesson, onNavi
         </div>
       </div>
 
-      {isFinalLesson ? (
+      {isFinalLesson && (
         <div className="flex shrink-0 flex-wrap items-center gap-2 border-b border-cyan-900/60 bg-cyan-950/30 px-3 py-2 text-xs sm:px-4">
           <span className="mr-auto font-semibold text-cyan-200">Final lesson · Play the completed game</span>
           <button type="button" onClick={playFinishedGame} className="flex items-center gap-1.5 rounded-lg bg-cyan-500 px-3 py-2 font-bold text-slate-950"><Play className="h-4 w-4" /> Play game</button>
           <button type="button" onClick={() => downloadGame(activeGame, difficulty)} className="flex items-center gap-1.5 rounded-lg border border-cyan-700 px-3 py-2 font-semibold text-cyan-200"><Download className="h-4 w-4" /> Download game</button>
           <button type="button" onClick={() => downloadLessonCode(activeGame, codeMap[activeLanguage] ?? '', activeLanguage)} className="rounded-lg px-2 py-2 text-slate-300 underline underline-offset-4">Download my code</button>
-        </div>
-      ) : (
-        <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-slate-800 bg-slate-900/50 px-3 py-1.5 text-xs text-slate-400 sm:px-4">
-          <span>Steps 1–{activeGame.lessons.length - 1} build the game. The final lesson has Play and Download.</span>
-          <button type="button" onClick={previewCurrentStep} className="rounded-lg border border-slate-700 px-3 py-1.5 font-semibold text-cyan-300">Preview this step</button>
         </div>
       )}
 
@@ -279,7 +308,7 @@ export const WorkspaceLayout: React.FC<WorkspaceLayoutProps> = ({ lesson, onNavi
         {mobileTab === 'guide' && (
           <div className="flex-1 overflow-y-auto">
             <Suspense fallback={<div className="p-4 text-xs text-cyan-400">Loading guide…</div>}>
-              <LessonViewer lesson={lesson} onNavigateNext={onNavigateNext} isFinalLesson={isFinalLesson} />
+              <LessonViewer lesson={lesson} onNavigateNext={onNavigateNext} onPreviewStep={previewCurrentStep} onPlayFinishedGame={playFinishedGame} isFinalLesson={isFinalLesson} />
             </Suspense>
           </div>
         )}
@@ -320,7 +349,7 @@ export const WorkspaceLayout: React.FC<WorkspaceLayoutProps> = ({ lesson, onNavi
           className="h-full min-w-[300px] flex flex-col shrink-0"
         >
           <Suspense fallback={<div className="p-4 text-xs text-cyan-400">Loading guide…</div>}>
-            <LessonViewer lesson={lesson} onNavigateNext={onNavigateNext} isFinalLesson={isFinalLesson} />
+            <LessonViewer lesson={lesson} onNavigateNext={onNavigateNext} onPreviewStep={previewCurrentStep} onPlayFinishedGame={playFinishedGame} isFinalLesson={isFinalLesson} />
           </Suspense>
         </div>
 
@@ -336,16 +365,43 @@ export const WorkspaceLayout: React.FC<WorkspaceLayoutProps> = ({ lesson, onNavi
         </div>
 
         {/* Center Panel: Code Editor (Top) + Canvas / Console (Bottom) */}
-        <div className="flex-1 h-full min-w-[360px] flex flex-col min-h-0 bg-slate-950">
-          {/* Top Half: Monaco Editor */}
-          <div className="h-3/5 min-h-[240px] flex flex-col">
+        <div
+          ref={editorStackRef}
+          className="flex-1 h-full min-w-[360px] min-h-0 grid bg-slate-950"
+          style={{ gridTemplateRows: `${editorHeightPercent}fr 8px ${100 - editorHeightPercent}fr` }}
+        >
+          {/* Top: Monaco Editor */}
+          <div className="min-h-0 flex flex-col overflow-hidden">
             <Suspense fallback={<div className="p-4 text-xs text-cyan-400">Loading code editor…</div>}>
               <CodeEditor currentStepId={lesson.id} />
             </Suspense>
           </div>
 
-          {/* Bottom Half: Output Canvas & Terminal */}
-          <div className="h-2/5 min-h-[220px] border-t border-slate-800 flex min-h-0">
+          <div
+            role="separator"
+            aria-label="Resize editor and output panels"
+            aria-orientation="horizontal"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={Math.round(editorHeightPercent)}
+            tabIndex={0}
+            onPointerDown={(event) => {
+              if (event.button !== 0) return;
+              event.currentTarget.setPointerCapture(event.pointerId);
+              setIsDraggingEditor(true);
+            }}
+            onPointerMove={handleEditorPointerMove}
+            onPointerUp={handleEditorPointerEnd}
+            onPointerCancel={handleEditorPointerEnd}
+            onKeyDown={handleEditorDividerKeyDown}
+            className={`z-10 flex items-center justify-center cursor-row-resize touch-none outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 hover:bg-cyan-500/80 ${isDraggingEditor ? 'bg-cyan-400' : 'bg-slate-800'}`}
+            title="Drag to resize editor and output (or use arrow keys)"
+          >
+            <div className="h-0.5 w-8 rounded-full bg-slate-500" />
+          </div>
+
+          {/* Bottom: Output Canvas & Terminal */}
+          <div className="min-h-0 border-t border-slate-800 flex overflow-hidden">
             {rightBottomTab === 'split' && (
               <>
                 <div className="w-1/2 h-full border-r border-slate-800 min-w-0">

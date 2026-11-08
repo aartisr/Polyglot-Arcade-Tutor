@@ -20,10 +20,12 @@ import { BookOpen, CheckCircle2, XCircle, Play, Code2, ArrowRight, Sparkles } fr
 interface LessonViewerProps {
   lesson: LessonStep;
   onNavigateNext?: () => void;
+  onPreviewStep: () => void;
+  onPlayFinishedGame: () => void;
   isFinalLesson?: boolean;
 }
 
-export const LessonViewer: React.FC<LessonViewerProps> = ({ lesson, onNavigateNext, isFinalLesson = false }) => {
+export const LessonViewer: React.FC<LessonViewerProps> = ({ lesson, onNavigateNext, onPreviewStep, onPlayFinishedGame, isFinalLesson = false }) => {
   const [showCompareModal, setShowCompareModal] = useState(false);
 
   const activeLanguage = useWorkspaceStore((state) => state.activeLanguage);
@@ -99,30 +101,41 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({ lesson, onNavigateNe
     <div className="flex flex-col h-full bg-slate-900 border-r border-slate-800 overflow-y-auto">
       {/* Lesson Header */}
       <div className="p-4 bg-slate-950 border-b border-slate-800 shrink-0">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+          <div className="flex min-w-0 items-center gap-2">
             <span className="text-[11px] font-bold font-mono px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800/60">
               STEP {lesson.stepNumber} OF {activeGame.lessons.length}
             </span>
-            <span className="text-xs text-slate-400 font-mono">{activeGame.title}</span>
+            <span className="min-w-0 truncate text-xs text-slate-400 font-mono">{activeGame.title}</span>
           </div>
 
           <button
             onClick={() => setShowCompareModal(true)}
-            className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-cyan-300 hover:text-cyan-200 bg-cyan-950/60 hover:bg-cyan-900/60 border border-cyan-800/60 rounded-md transition-colors"
+            aria-label="Compare languages"
+            className="flex shrink-0 items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-cyan-300 hover:text-cyan-200 bg-cyan-950/60 hover:bg-cyan-900/60 border border-cyan-800/60 rounded-md transition-colors"
           >
             <Code2 className="w-3.5 h-3.5" />
-            <span>Compare Languages</span>
+            <span className="hidden sm:inline">Compare Languages</span>
           </button>
         </div>
 
         <h1 className="text-lg font-bold text-slate-100 mb-1">{lesson.title}</h1>
         <p className="text-xs text-slate-400 leading-relaxed">{lesson.subtitle}</p>
-        <p className="mt-3 rounded-lg border border-cyan-900/50 bg-cyan-950/20 px-3 py-2 text-xs leading-relaxed text-cyan-100">
-          {isFinalLesson
-            ? 'Play game above opens the completed reference game. Download game saves that playable version as an HTML file. Download my code saves only your current editor text.'
-            : 'Read this step, change the code, then choose Preview this step above. The complete playable game is available in the final lesson.'}
-        </p>
+        <div className="mt-3 flex flex-col gap-3 rounded-lg border border-cyan-900/50 bg-cyan-950/20 p-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-xs leading-relaxed text-cyan-100">
+            {isFinalLesson
+              ? 'Try the complete game, or download it from the workspace bar.'
+              : 'Change the code, then preview this step. The complete game is available in the final lesson.'}
+          </p>
+          <button
+            type="button"
+            onClick={isFinalLesson ? onPlayFinishedGame : onPreviewStep}
+            className="flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-lg bg-cyan-500 px-4 py-2 text-xs font-bold text-slate-950 hover:bg-cyan-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
+          >
+            <Play className="h-4 w-4 fill-current" />
+            {isFinalLesson ? 'Play complete game' : 'Preview this step'}
+          </button>
+        </div>
       </div>
 
       {/* Main Instruction Body */}
@@ -153,7 +166,7 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({ lesson, onNavigateNe
               {/* Interactive Visual Diagrams */}
               {concept.diagramType === 'canvas-coords' && (
                 <div className="p-3 bg-slate-900 border border-slate-800 rounded-md">
-                  <div className="text-[11px] font-mono text-cyan-400 mb-2 flex items-center justify-between">
+                  <div className="text-[11px] font-mono text-cyan-400 mb-2 flex flex-wrap items-center justify-between gap-1">
                     <span>2D Canvas Coordinate Surface</span>
                     <span>(0,0) Top-Left Origin</span>
                   </div>
@@ -219,17 +232,17 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({ lesson, onNavigateNe
 
         {/* Test Validation Suite */}
         <div className="p-4 bg-slate-950 border border-slate-800 rounded-lg space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="text-xs font-semibold tracking-wider text-slate-300 uppercase flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-cyan-400" />
-              <span>Step Test Validation Suite</span>
+              <span>Step checks</span>
             </h2>
             <button
               onClick={handleRunTests}
               className="flex items-center gap-1.5 px-3 py-1.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs rounded-md shadow-md shadow-cyan-500/20 transition-colors"
             >
               <Play className="w-3.5 h-3.5 fill-current" />
-              <span>Validate Code</span>
+              <span>Run checks</span>
             </button>
           </div>
 
@@ -283,9 +296,9 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({ lesson, onNavigateNe
             Final lesson reached. Use <strong>Play game</strong> or <strong>Download game</strong> in the bar above whenever you are ready.
           </div>
         ) : onNavigateNext && (
-          <div className="pt-4 border-t border-slate-800 flex items-center justify-between">
+          <div className="pt-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3">
             <div className="text-xs text-slate-400 font-mono">
-              {isStepCompleted ? 'Step completed! Ready for next level.' : 'Complete tests to advance.'}
+              {isStepCompleted ? 'Step completed. Ready for the next lesson.' : 'Run checks when ready, or continue to the next lesson.'}
             </div>
             <button
               onClick={onNavigateNext}

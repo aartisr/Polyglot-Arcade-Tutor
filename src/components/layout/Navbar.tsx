@@ -206,8 +206,28 @@ export const Navbar: React.FC<NavbarProps> = ({ currentStepId, onSelectStep, onS
             </div>
           </div>
 
-          {/* Mobile Quick Action Buttons Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            <button
+              type="button"
+              onClick={() => { setShowGuide(true); setShowMobileMenu(false); }}
+              className="flex min-h-11 items-center gap-2 rounded-xl border border-cyan-800 bg-cyan-950/40 p-2.5 text-cyan-200"
+            >
+              <HelpCircle className="h-4 w-4 shrink-0" />
+              <span>Quick start</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => { setShowManual(true); setShowMobileMenu(false); }}
+              className="flex min-h-11 items-center gap-2 rounded-xl border border-slate-800 bg-slate-900 p-2.5 text-slate-200"
+            >
+              <HelpCircle className="h-4 w-4 shrink-0 text-cyan-400" />
+              <span>Game guide</span>
+            </button>
+          </div>
+
+          <details className="rounded-xl border border-slate-800 bg-slate-900/50 p-2">
+            <summary className="cursor-pointer px-2 py-1 text-xs font-semibold text-slate-300">Community and rewards</summary>
+          <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
             <button
               onClick={() => {
                 arcadeAudio.playClick();
@@ -262,18 +282,6 @@ export const Navbar: React.FC<NavbarProps> = ({ currentStepId, onSelectStep, onS
             <button
               onClick={() => {
                 arcadeAudio.playClick();
-                setShowManual(true);
-                setShowMobileMenu(false);
-              }}
-              className="flex items-center gap-2 p-2.5 bg-slate-900 border border-slate-800 rounded-xl text-slate-300"
-            >
-              <HelpCircle className="w-4 h-4 text-cyan-400" />
-              <span>Game Manual</span>
-            </button>
-
-            <button
-              onClick={() => {
-                arcadeAudio.playClick();
                 setShowShare(true);
                 setShowMobileMenu(false);
               }}
@@ -295,6 +303,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentStepId, onSelectStep, onS
               <span>1v1 Code Duel Arena</span>
             </button>
           </div>
+          </details>
 
           <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-slate-800/80 text-xs">
             <span className="w-full text-slate-500">Settings</span>

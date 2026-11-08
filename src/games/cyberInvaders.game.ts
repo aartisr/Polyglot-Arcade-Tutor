@@ -5,6 +5,7 @@ import { cyberInvadersSnippets } from './cyberInvadersSnippets';
 
 export const cyberInvadersGame: GameDefinition = {
   id: 'cyber-invaders',
+  catalogOrder: 10,
   title: 'Cyber Invaders: Space Grid',
   subtitle: 'Retro 2D Arcade Space Shooter Engine',
   genre: 'Arcade Space Invaders',
@@ -46,3 +47,5 @@ export const cyberInvadersGame: GameDefinition = {
     ],
   },
 };
+
+export default cyberInvadersGame;

@@ -61,6 +61,8 @@ export interface TouchControl {
 
 export interface GameDefinition {
   id: string;
+  /** Optional position in the game chooser; the first game is the default. */
+  catalogOrder?: number;
   title: string;
   subtitle: string;
   genre: string;

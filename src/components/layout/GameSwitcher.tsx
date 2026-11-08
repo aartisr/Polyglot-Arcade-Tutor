@@ -10,9 +10,11 @@ interface GameSwitcherProps {
 
 export const GameSwitcher: React.FC<GameSwitcherProps> = ({ onSelectGame, className = '' }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [query, setQuery] = useState('');
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   const { games, activeGame, activeGameId, switchGame } = useGameRegistry();
+  const visibleGames = games.filter((game) => `${game.title} ${game.genre} ${game.tagline}`.toLowerCase().includes(query.trim().toLowerCase()));
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -29,11 +31,17 @@ export const GameSwitcher: React.FC<GameSwitcherProps> = ({ onSelectGame, classN
     if (onSelectGame) onSelectGame(gameId);
     else switchGame(gameId);
     setIsOpen(false);
+    setQuery('');
   };
 
   return (
-    <div className={`relative ${className}`} ref={dropdownRef}>
+    <div className={`relative ${className}`} ref={dropdownRef} onKeyDown={(event) => {
+      if (event.key === 'Escape') { setIsOpen(false); setQuery(''); }
+    }}>
       <button
+        type="button"
+        aria-expanded={isOpen}
+        aria-label={`Choose game, current game: ${activeGame.title}`}
         onClick={() => {
           arcadeAudio.playClick();
           setIsOpen((prev) => !prev);
@@ -44,7 +52,7 @@ export const GameSwitcher: React.FC<GameSwitcherProps> = ({ onSelectGame, classN
         <span className="text-base shrink-0">{activeGame.badge}</span>
         <div className="hidden sm:flex flex-col min-w-0">
           <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 group-hover:text-cyan-400 transition-colors flex items-center gap-1">
-            <span>ARCADE ENGINE</span>
+            <span>CHOOSE GAME</span>
             <span className="text-[9px] px-1 rounded bg-slate-800 text-slate-300">
               {games.length} GAMES
             </span>
@@ -62,16 +70,29 @@ export const GameSwitcher: React.FC<GameSwitcherProps> = ({ onSelectGame, classN
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="fixed inset-x-2 top-14 sm:absolute sm:inset-x-auto sm:top-full sm:left-0 mt-2 w-auto sm:w-72 bg-slate-950 border border-slate-800 rounded-xl shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150 p-1.5 space-y-1">
+        <div className="fixed inset-x-2 top-14 sm:absolute sm:inset-x-auto sm:top-full sm:left-0 mt-2 w-auto sm:w-80 max-h-[min(70vh,32rem)] overflow-y-auto bg-slate-950 border border-slate-800 rounded-xl shadow-2xl z-50 animate-in fade-in slide-in-from-top-2 duration-150 p-1.5 space-y-1">
           <div className="px-3 py-1.5 text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest border-b border-slate-800/80 flex items-center justify-between">
-            <span>SELECT GAME TUTOR</span>
+            <span>CHOOSE A GAME</span>
             <Sparkles className="w-3 h-3 text-cyan-400" />
           </div>
 
-          {games.map((game) => {
+          {games.length > 6 && (
+            <input
+              autoFocus
+              type="search"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Find a game or genre"
+              aria-label="Find a game or genre"
+              className="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-100 outline-none focus:border-cyan-500"
+            />
+          )}
+
+          {visibleGames.map((game) => {
             const isSelected = game.id === activeGameId;
             return (
               <button
+                type="button"
                 key={game.id}
                 onClick={() => handleGameChange(game.id)}
                 className={`w-full flex items-start gap-3 p-2.5 rounded-lg text-left transition-all ${
@@ -97,6 +118,7 @@ export const GameSwitcher: React.FC<GameSwitcherProps> = ({ onSelectGame, classN
               </button>
             );
           })}
+          {visibleGames.length === 0 && <p className="px-3 py-3 text-xs text-slate-400">No games match that search.</p>}
         </div>
       )}
     </div>

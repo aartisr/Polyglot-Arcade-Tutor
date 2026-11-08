@@ -1,6 +1,6 @@
 ---
 title: Games and Lessons
-description: The Neon Dungeon and Cyber Invaders lesson paths in PolyGlot Arcade Tutor by Aarti S Ravikumar.
+description: Four playable game paths and lessons in PolyGlot Arcade Tutor by Aarti S Ravikumar.
 ---
 
 # Games and lessons
@@ -22,6 +22,22 @@ Build an arcade space defender through ship drawing, movement and lasers, alien 
 2. [Strafing and plasma lasers](https://pat.pcssiirobotics.org/tutor/step-2?game=cyber-invaders)
 3. [Alien grid and collision math](https://pat.pcssiirobotics.org/tutor/step-3?game=cyber-invaders)
 4. [Game loop, bunkers, and score](https://pat.pcssiirobotics.org/tutor/step-4?game=cyber-invaders)
+
+## Pulse Arena: Survivor
+
+Dodge pursuing sentries and collect energy orbs while learning movement vectors and pickup collision.
+
+1. [Draw your arena hero](https://pat.pcssiirobotics.org/tutor/step-1?game=arena-survivor)
+2. [Move and evade](https://pat.pcssiirobotics.org/tutor/step-2?game=arena-survivor)
+3. [Collect energy orbs](https://pat.pcssiirobotics.org/tutor/step-3?game=arena-survivor)
+
+## Little Garden: Bloom Day
+
+Plant and harvest flowers at your own pace while learning proximity checks and growth over time.
+
+1. [Draw a garden](https://pat.pcssiirobotics.org/tutor/step-1?game=cozy-garden)
+2. [Plant a seed](https://pat.pcssiirobotics.org/tutor/step-2?game=cozy-garden)
+3. [Grow and harvest](https://pat.pcssiirobotics.org/tutor/step-3?game=cozy-garden)
 
 Every lesson has `TODO` tasks, progressive hints, a worked example, and checks. [Explore the crawlable lesson guide](https://pat.pcssiirobotics.org/discover/) for descriptions of each step.
 

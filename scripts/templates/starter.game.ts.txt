@@ -1,0 +1,103 @@
+import type { GameDefinition } from '../types/game';
+
+// This complete starter game is discovered automatically. Customize its rules, art, and lessons here.
+const game: GameDefinition = {
+  id: __ID_LITERAL__,
+  title: __TITLE_LITERAL__,
+  subtitle: 'Collect stars in a tiny arcade world',
+  genre: 'Arcade collection',
+  tagline: 'Move around and collect stars to score points.',
+  description: 'Learn canvas coordinates and collision by building a small collection game.',
+  story: 'A field of stars is waiting to be explored.',
+  objective: 'Collect as many stars as you can.',
+  controlsTip: 'Move with WASD or Arrow keys.',
+  badge: '⭐',
+  accentColor: '#facc15',
+  canvas: { width: 400, height: 400 },
+  inputKeys: ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'w', 'a', 's', 'd', 'W', 'A', 'S', 'D'],
+  getDifficultyParams: (level) => ({ speedMult: 0.75 + level * 0.15, label: `Level ${level}: Star hunt`, color: 'text-amber-300' }),
+  engine: {
+    createInitialState() {
+      return { player: { x: 200, y: 200 }, star: { x: 80, y: 80 }, score: 0 };
+    },
+    update(state, keys, _stepId, difficulty, hooks) {
+      const dx = Number(Boolean(keys.ArrowRight || keys.d || keys.D)) - Number(Boolean(keys.ArrowLeft || keys.a || keys.A));
+      const dy = Number(Boolean(keys.ArrowDown || keys.s || keys.S)) - Number(Boolean(keys.ArrowUp || keys.w || keys.W));
+      const length = Math.hypot(dx, dy) || 1;
+      state.player.x = Math.max(12, Math.min(388, state.player.x + dx / length * 3 * difficulty.speedMult));
+      state.player.y = Math.max(12, Math.min(388, state.player.y + dy / length * 3 * difficulty.speedMult));
+      if (Math.hypot(state.player.x - state.star.x, state.player.y - state.star.y) < 21) {
+        state.score++;
+        state.star.x = 40 + (state.score * 97) % 320;
+        state.star.y = 40 + (state.score * 157) % 320;
+        hooks.playScore();
+      }
+    },
+    render(ctx, state, _stepId, _difficulty, languageLabel) {
+      ctx.fillStyle = '#10182d'; ctx.fillRect(0, 0, 400, 400);
+      ctx.fillStyle = '#facc15'; ctx.beginPath(); ctx.arc(state.star.x, state.star.y, 9, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#38bdf8'; ctx.beginPath(); ctx.arc(state.player.x, state.player.y, 12, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.font = '16px monospace'; ctx.fillText(`Stars ${state.score}`, 12, 24);
+      ctx.font = '10px monospace'; ctx.fillText(languageLabel, 12, 390);
+    },
+  },
+  lessons: [{
+    id: 'step-1', stepNumber: 1, title: 'Draw and collect a star', subtitle: 'Start with coordinates and a pickup',
+    description: 'Draw a star on the canvas, then use distance to tell when the player has reached it.',
+    concepts: [{ title: 'Distance between points', description: 'Math.hypot finds the distance between the player and star.', diagramType: 'aabb-collision' }],
+    codeBoilerplate: {
+      javascript: `const canvas = document.getElementById('game-canvas');
+const ctx = canvas.getContext('2d');
+const player = { x: 200, y: 200 };
+const star = { x: 80, y: 80 };
+// TODO: Use Math.hypot to find the distance from player to star.
+`,
+      python: `import math
+player = {'x': 200, 'y': 200}
+star = {'x': 80, 'y': 80}
+# TODO: Use math.hypot to find the distance from player to star.
+`,
+      java: `class StarGame {
+    // TODO: Use Math.hypot to find the distance from player to star.
+}
+`,
+    },
+    solution: {
+      javascript: `const canvas = document.getElementById('game-canvas');
+const ctx = canvas.getContext('2d');
+const player = { x: 200, y: 200 };
+const star = { x: 80, y: 80 };
+const distance = Math.hypot(player.x - star.x, player.y - star.y);
+ctx.fillStyle = '#facc15'; ctx.fillRect(star.x, star.y, 16, 16);
+console.log('Distance to star', distance);
+`,
+      python: `import math
+player = {'x': 200, 'y': 200}
+star = {'x': 80, 'y': 80}
+distance = math.hypot(player['x'] - star['x'], player['y'] - star['y'])
+print('Distance to star', distance)
+`,
+      java: `class StarGame {
+    public static void main(String[] args) {
+        double distance = Math.hypot(200 - 80, 200 - 80);
+        System.out.println("Distance to star " + distance);
+    }
+}
+`,
+    },
+    hints: ['Subtract the star coordinates from the player coordinates.', 'Pass the two differences to hypot.'],
+    tests: [{ id: 'distance', name: 'Star distance', description: 'Calculate the distance to the star.', hint: 'Use hypot.', check: (code) => ({ passed: /hypot/.test(code), message: 'Distance calculation checked.' }) }],
+  }],
+  manual: { controls: [{ title: 'Move', keys: ['WASD', 'Arrow keys'], description: 'Reach the stars.' }], entities: [
+    { title: 'Player', symbol: '🔵', description: 'Your movable character.' },
+    { title: 'Star', symbol: '⭐', description: 'Collect to score.' },
+  ] },
+  touchControls: { label: 'Move', buttons: [
+    { key: 'ArrowUp', label: 'Up', icon: 'up', row: 1, column: 2 },
+    { key: 'ArrowLeft', label: 'Left', icon: 'left', row: 2, column: 1 },
+    { key: 'ArrowRight', label: 'Right', icon: 'right', row: 2, column: 3 },
+    { key: 'ArrowDown', label: 'Down', icon: 'down', row: 3, column: 2 },
+  ] },
+};
+
+export default game;

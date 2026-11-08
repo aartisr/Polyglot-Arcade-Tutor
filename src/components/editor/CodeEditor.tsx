@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Editor, { Monaco } from '@monaco-editor/react';
 import confetti from 'canvas-confetti';
-import { useWorkspaceStore, updateCode } from '../../store/workspaceStore';
+import { useWorkspaceStore, updateCode, setValidationResult, setStepCompleted } from '../../store/workspaceStore';
 import { gameRegistry } from '../../services/GameRegistry';
 import { CoopService } from '../../services/CoopService';
 import { LanguageSelector } from './LanguageSelector';
@@ -103,6 +103,10 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ currentStepId }) => {
     const results = gameRegistry.runLessonTests(activeGameId, currentStepId, currentCode, logs);
     setTestResults(results);
     setShowTestModal(true);
+    results.forEach((result) => setValidationResult(result.testId, result.passed, result.message));
+    if (results.length > 0 && results.every((result) => result.passed)) {
+      setStepCompleted(currentStepId);
+    }
 
     const passedCount = results.filter(r => r.passed).length;
 

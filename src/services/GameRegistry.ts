@@ -114,6 +114,9 @@ export class GameRegistryService<T extends GameDefinition = GameDefinition> impl
     if (!game.id || typeof game.id !== 'string' || game.id.trim() === '') {
       errors.push('Game configuration must have a non-empty string "id".');
     }
+    if (game.catalogOrder !== undefined && !Number.isFinite(game.catalogOrder)) {
+      errors.push('Game configuration "catalogOrder" must be a finite number.');
+    }
     for (const field of ['title', 'subtitle', 'genre', 'tagline', 'description', 'story', 'objective', 'controlsTip', 'badge'] as const) {
       if (typeof game[field] !== 'string' || !game[field]?.trim()) {
         errors.push(`Game configuration must have a non-empty string "${field}".`);

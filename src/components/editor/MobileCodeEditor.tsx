@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Beaker } from 'lucide-react';
-import { useWorkspaceStore, updateCode } from '../../store/workspaceStore';
+import { useWorkspaceStore, updateCode, setValidationResult, setStepCompleted } from '../../store/workspaceStore';
 import { gameRegistry } from '../../services/GameRegistry';
 import { arcadeAudio } from '../../utils/audio';
 import { BoilerplateSnippetsMenu } from './BoilerplateSnippetsMenu';
@@ -22,16 +22,20 @@ export const MobileCodeEditor: React.FC<MobileCodeEditorProps> = ({ currentStepI
 
   const handleRunTests = () => {
     arcadeAudio.playClick();
-    setTestResults(gameRegistry.runLessonTests(activeGameId, currentStepId, currentCode, logs));
+    const results = gameRegistry.runLessonTests(activeGameId, currentStepId, currentCode, logs);
+    setTestResults(results);
+    results.forEach((result) => setValidationResult(result.testId, result.passed, result.message));
+    if (results.length > 0 && results.every((result) => result.passed)) {
+      setStepCompleted(currentStepId);
+    }
     setShowTestModal(true);
   };
 
   return (
     <div className="flex flex-col h-full min-h-0 min-w-0 bg-slate-950">
       <LanguageSelector currentStepId={currentStepId} />
-      <div className="flex shrink-0 items-center justify-between gap-2 border-b border-slate-800 bg-slate-900 px-3 py-2">
-        <span className="text-xs text-slate-400">Mobile code editor</span>
-        <div className="flex items-center gap-2">
+      <div className="flex shrink-0 items-center justify-end gap-2 border-b border-slate-800 bg-slate-900 px-3 py-2">
+        <div className="flex min-w-0 items-center gap-2">
           <BoilerplateSnippetsMenu />
           <button
             type="button"
@@ -39,7 +43,7 @@ export const MobileCodeEditor: React.FC<MobileCodeEditorProps> = ({ currentStepI
             className="flex items-center gap-1 rounded-lg border border-cyan-500/60 bg-cyan-950/70 px-3 py-1.5 text-xs font-semibold text-cyan-300"
           >
             <Beaker className="h-4 w-4" />
-            Run Tests
+            Run checks
           </button>
         </div>
       </div>

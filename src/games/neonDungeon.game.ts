@@ -5,6 +5,7 @@ import { neonDungeonSnippets } from './neonDungeonSnippets';
 
 export const neonDungeonGame: GameDefinition = {
   id: 'neon-dungeon',
+  catalogOrder: 0,
   title: 'Neon Dungeon: Rogue Crawler',
   subtitle: 'Top-Down 2D Dungeon Crawler Engine',
   genre: 'Retro 2D Dungeon Crawler',
@@ -51,3 +52,5 @@ export const neonDungeonGame: GameDefinition = {
     ],
   },
 };
+
+export default neonDungeonGame;

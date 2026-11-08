@@ -58,7 +58,7 @@ export const QuickStartGuideModal: React.FC<QuickStartGuideModalProps> = ({ isOp
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="w-full max-w-lg bg-slate-900 border border-cyan-500/50 rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+      <div className="max-h-[calc(100dvh-2rem)] w-full max-w-lg bg-slate-900 border border-cyan-500/50 rounded-2xl shadow-2xl overflow-hidden flex flex-col">
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800">
           <h2 className="text-sm font-bold text-slate-100 font-mono tracking-wider">QUICK START GUIDE ({currentStep + 1}/{steps.length})</h2>
           <button onClick={onClose} className="p-1 text-slate-400 hover:text-slate-100 transition-colors">
@@ -66,7 +66,7 @@ export const QuickStartGuideModal: React.FC<QuickStartGuideModalProps> = ({ isOp
           </button>
         </div>
 
-        <div className="p-8 flex flex-col items-center text-center space-y-6">
+        <div className="min-h-0 overflow-y-auto p-5 sm:p-8 flex flex-col items-center text-center space-y-6">
           <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 shadow-inner">
             {step.icon}
           </div>

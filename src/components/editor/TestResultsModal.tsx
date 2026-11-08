@@ -36,14 +36,14 @@ export const TestResultsModal: React.FC<TestResultsModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
       <div className="w-full max-w-2xl bg-slate-900 border border-cyan-500/50 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[calc(100dvh-1.5rem)] sm:max-h-[90dvh]">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 bg-slate-950 border-b border-slate-800">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between gap-2 px-3 sm:px-6 py-3 sm:py-4 bg-slate-950 border-b border-slate-800">
+          <div className="flex min-w-0 items-center gap-2 sm:gap-3">
             <div className="p-2 bg-cyan-500/10 border border-cyan-500/30 rounded-xl text-cyan-400">
               <Beaker className="w-6 h-6 animate-pulse" />
             </div>
-            <div>
-              <h2 className="text-lg font-bold text-slate-100 flex items-center gap-2">
-                <span>Physics & Logic Test Suite</span>
+            <div className="min-w-0">
+              <h2 className="text-sm sm:text-lg font-bold text-slate-100 flex flex-wrap items-center gap-1 sm:gap-2">
+                <span>Test results</span>
                 <span className={`text-xs font-mono px-2 py-0.5 rounded border ${
                   allPassed
                     ? 'bg-emerald-950/80 border-emerald-500/50 text-emerald-300'
@@ -58,18 +58,20 @@ export const TestResultsModal: React.FC<TestResultsModalProps> = ({
             </div>
           </div>
           <button
+            type="button"
+            aria-label="Close test results"
             onClick={() => {
               arcadeAudio.playClick();
               onClose();
             }}
-            className="p-2 text-slate-400 hover:text-slate-100 bg-slate-900 border border-slate-800 rounded-xl transition-colors cursor-pointer"
+            className="shrink-0 p-2 text-slate-400 hover:text-slate-100 bg-slate-900 border border-slate-800 rounded-xl transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Body Content */}
-        <div className="p-6 overflow-y-auto space-y-4 flex-1">
+        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-3 sm:p-6">
           {results.length === 0 ? (
             <div className="text-center py-12 text-slate-400 font-mono text-xs">
               No physics assertions defined for this step.

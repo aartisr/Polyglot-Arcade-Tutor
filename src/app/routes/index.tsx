@@ -75,7 +75,7 @@ const IndexComponent: React.FC = () => {
   const currentGame = getGameById(selectedGameId);
 
   const completedSteps = useWorkspaceStore(
-    (state) => state.completedStepsByGame?.[selectedGameId] || state.completedSteps
+    (state) => state.completedStepsByGame?.[selectedGameId] || (selectedGameId === state.activeGameId ? state.completedSteps : {})
   );
   const completedStepsByGame = useWorkspaceStore((state) => state.completedStepsByGame);
   const defaultCompletedSteps = useWorkspaceStore((state) => state.completedSteps);
@@ -116,16 +116,6 @@ const IndexComponent: React.FC = () => {
             Play a finished game now, or follow short lessons to learn how it works.
           </p>
 
-          {/* Quick Action Buttons */}
-          <div className="col-span-2 md:col-span-1 md:col-start-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-1">
-            <button
-              onClick={() => handleLaunchGame(selectedGameId)}
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-sm rounded-xl shadow-lg shadow-cyan-500/20 transition-all transform hover:-translate-y-0.5 cursor-pointer w-full sm:w-auto"
-            >
-              <span>Start {currentGame.title.split(':')[0]}</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
         </div>
 
         {/* Section: Select Arcade Game Engine */}
@@ -137,6 +127,7 @@ const IndexComponent: React.FC = () => {
             </div>
             <span className="text-xs text-slate-500">{allGames.length} games</span>
           </div>
+          <p className="text-xs text-slate-400">Play now or start learning. Select a game title to browse its lessons below.</p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {allGames.map((game) => {
@@ -145,21 +136,25 @@ const IndexComponent: React.FC = () => {
               const completedCount = game.lessons.filter((l) => gameCompleted[l.id]).length;
 
               return (
-                <div
+                <article
                   key={game.id}
-                  onClick={() => {
-                    arcadeAudio.playClick();
-                    setSelectedGameId(game.id);
-                    setActiveGame(game.id);
-                  }}
                   style={isSelected ? { borderColor: game.accentColor ?? '#22d3ee', boxShadow: `0 0 24px color-mix(in srgb, ${game.accentColor ?? '#22d3ee'} 22%, transparent)` } : undefined}
-                  className={`p-6 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between space-y-4 ${
+                  className={`p-4 sm:p-5 rounded-2xl border transition-all flex flex-col justify-between space-y-4 focus-within:ring-2 focus-within:ring-cyan-500 ${
                     isSelected
                       ? 'bg-slate-900/90'
                       : 'bg-slate-950/80 border-slate-800 hover:border-slate-700 hover:bg-slate-900/50'
                   }`}
                 >
-                  <div className="space-y-3">
+                  <button
+                    type="button"
+                    aria-label={`Select ${game.title} to view its lessons`}
+                    aria-pressed={isSelected}
+                    onClick={() => {
+                      arcadeAudio.playClick();
+                      setSelectedGameId(game.id);
+                    }}
+                    className="w-full space-y-3 rounded-lg text-left focus-visible:outline-2 focus-visible:outline-cyan-400"
+                  >
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="flex items-center gap-2.5">
                         <span className="text-2xl">{game.badge}</span>
@@ -183,7 +178,7 @@ const IndexComponent: React.FC = () => {
                     <p className="text-xs text-slate-300 leading-relaxed">
                       {game.tagline}
                     </p>
-                  </div>
+                  </button>
 
                   <div className="space-y-3 pt-3 border-t border-slate-800/80">
                     <div className="flex items-center justify-between text-xs font-mono">
@@ -195,20 +190,18 @@ const IndexComponent: React.FC = () => {
 
                     <div className="flex flex-wrap items-center justify-end gap-2">
                       <button
-                        onClick={(event) => {
-                          event.stopPropagation();
+                        onClick={() => {
                           setPreviewGameId(game.id);
                         }}
-                        className="flex items-center gap-1.5 rounded-lg border border-slate-700 px-3.5 py-1.5 text-xs font-semibold text-slate-200 hover:border-cyan-600 hover:text-cyan-300"
+                        className="flex min-h-11 items-center gap-1.5 rounded-lg border border-slate-700 px-3.5 py-1.5 text-xs font-semibold text-slate-200 hover:border-cyan-600 hover:text-cyan-300"
                       >
                         <Play className="h-3.5 w-3.5" /> Play game
                       </button>
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation();
+                        onClick={() => {
                           handleLaunchGame(game.id);
                         }}
-                        className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                        className={`flex min-h-11 items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
                           isSelected
                             ? 'bg-cyan-500 hover:bg-cyan-400 text-slate-950 shadow-neon-cyan'
                             : 'bg-slate-800 hover:bg-slate-700 text-slate-200'
@@ -219,7 +212,7 @@ const IndexComponent: React.FC = () => {
                       </button>
                     </div>
                   </div>
-                </div>
+                </article>
               );
             })}
           </div>
@@ -271,17 +264,17 @@ const IndexComponent: React.FC = () => {
           </div>
         </details>
 
-        {/* Step Cards Grid for Selected Game */}
-        <div className="space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <h2 className="text-sm font-semibold tracking-wider text-slate-400 uppercase flex items-center gap-2">
+        {/* Lesson list stays available without crowding the first decision. */}
+        <details className="group rounded-2xl border border-slate-800 bg-slate-900/70 p-4 sm:p-5">
+          <summary className="flex cursor-pointer list-none flex-wrap items-center justify-between gap-2">
+            <span className="text-sm font-semibold text-slate-200 flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-cyan-400" />
-              <span>Curriculum Roadmap: {currentGame.title} ({currentGame.lessons.length} Steps)</span>
-            </h2>
-            <span className="text-xs font-mono text-cyan-400">Click any step to begin coding</span>
-          </div>
+              <span>Lessons in {currentGame.title}</span>
+            </span>
+            <span className="text-xs text-slate-400">{currentGame.lessons.length} steps · View</span>
+          </summary>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
             {currentGame.lessons.map((step) => {
               const isDone = Boolean(completedSteps[step.id]);
               return (
@@ -321,7 +314,7 @@ const IndexComponent: React.FC = () => {
               );
             })}
           </div>
-        </div>
+        </details>
 
         {/* Real-time Global Leaderboard Section */}
         <details className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4">

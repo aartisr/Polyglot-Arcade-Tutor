@@ -107,12 +107,19 @@ The project is built with React, TypeScript, Vite, Monaco Editor, and Firebase. 
 
 ## Add or remove a game
 
-Each game is a `GameDefinition` module in `src/games/`. The two examples are `neonDungeon.ts` and `cyberInvaders.ts`. A game module owns its lesson list, engine, story and visual details, and optional snippets, manual cards, touch controls, canvas size, keyboard keys, and achievements.
+Create a playable starter in one command:
 
-1. Create a module in `src/games/` exporting a `GameDefinition`. Give it a unique `id`, at least one lesson, and an engine implementing `createInitialState`, `update`, and `render`. Use `src/games/neonDungeon.ts` as a working example. Lesson IDs only need to be unique **within that game**.
-2. Import the module and add it to `builtInGames` in `src/games/index.ts`. The first entry is the default game. The home page, game switcher, lesson route, workspace state, manual, snippets, and touch controls read from the registry; they do not require a new conditional branch.
-3. To remove a game, remove its import and entry from `builtInGames`. Keep at least one game. This does not delete the game's source files; review any saved progress separately if you persist workspace data.
-4. Run `bun run test:games`, `bun run lint`, and `bun run build`.
+```bash
+npm run game:new -- comet-dash "Comet Dash"
+```
+
+This creates `src/games/comet-dash.game.ts` with a working canvas game, one lesson, code examples in all three languages, touch controls, and a guide. Customize that one file to make its gameplay and curriculum distinct. A complete custom game can also be dropped into `src/games/` as a `*.game.ts` file with a default `GameDefinition` export. Examples include `neonDungeon.game.ts`, `cyberInvaders.game.ts`, `arenaSurvivor.game.ts`, and `cozyGarden.game.ts`.
+
+`scripts/sync-games.mjs` generates the catalog from those files. The `dev`, `build`, `lint`, and `test:games` commands run it automatically. To remove a game, delete its `*.game.ts` file and run a normal command; no imports, routes, or chooser code need editing. Keep at least one game. Use optional `catalogOrder` to choose display order; the first game is the default. If you add a module while the dev server is already running, run `npm run sync:games` to refresh the catalog.
+
+Run `npm run test:games`, `npm run lint`, and `npm run build` before shipping a new game.
+
+Keep each game card easy to scan: use a short title, a familiar genre, and a one-sentence tagline. The home page offers just **Play game** and **Start learning**; detailed rules stay in the game guide. The navigation switcher shows the current game, limits the menu height, and adds search once the catalog exceeds six games.
 
 For runtime registration, call `gameRegistry.register(game)` and `gameRegistry.unregister(gameId)`. The registry validates required fields and prevents removing the last game. When the default game is removed, the next registered game becomes the default. The `useGameRegistry` hook updates selection views and moves the active workspace to a remaining game.
 

@@ -5,16 +5,15 @@ description: Extend the PolyGlot Arcade Tutor game registry with reusable game m
 
 # Add or remove a game
 
-Each game is a `GameDefinition` module in [`src/games/`](https://github.com/aartisr/Polyglot-Arcade-Tutor/tree/main/src/games). The built-in games show the pattern.
+Create a working starter with `npm run game:new -- my-game "My Game"`. It immediately adds a playable collection game, a lesson, three language examples, and touch controls. Customize the generated `src/games/my-game.game.ts` file to give it its own gameplay and lessons.
 
-1. Create a module that exports a `GameDefinition` with a unique `id`, at least one lesson, and an engine with `createInitialState`, `update`, and `render`.
-2. Add the module to `builtInGames` in [`src/games/index.ts`](https://github.com/aartisr/Polyglot-Arcade-Tutor/blob/main/src/games/index.ts). The first entry is the default.
-3. Include lesson starter code, worked examples, hints, and checks for JavaScript, Python, and Java. Add optional snippets, manual cards, touch controls, and achievements as needed.
-4. Run `bun run test:games`, `bun run lint`, and `bun run build`.
+To add a custom game directly, drop one `*.game.ts` module with a default `GameDefinition` export into [`src/games/`](https://github.com/aartisr/Polyglot-Arcade-Tutor/tree/main/src/games). Give it a unique `id`, at least one lesson, and an engine with `createInitialState`, `update`, and `render`. The catalog is generated automatically when you run `dev`, `build`, `lint`, or `test:games`. Use optional `catalogOrder` to control chooser order; the first game becomes the default.
+
+Run `npm run test:games`, `npm run lint`, and `npm run build` before shipping. If you add a file while the dev server is running, run `npm run sync:games` to refresh the catalog.
 
 The home screen, game switcher, lesson route, manual, snippets, and touch controls read from the registry. The live site's discovery pages and sitemap are also generated from it.
 
-To remove a game, remove its import and entry from `builtInGames`. Keep at least one game. Review saved user progress separately if you persist workspace data.
+To remove a game, delete its `*.game.ts` module and run a normal command. Keep at least one game. Review saved user progress separately if you persist workspace data.
 
 Python and Java remain simulated preview modes. Adding real execution for either language requires a new runner.
 
